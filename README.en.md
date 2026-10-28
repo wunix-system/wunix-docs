@@ -17,6 +17,9 @@ The documentation is organized into modular topic sections. Every document is av
 - **Wunix Core Kernel Architecture**:
   - [🇷🇺 Русский](architecture/kernel.ru.md) | [🇬🇧 English](architecture/kernel.en.md)
   - Kernel internals: Higher-Half memory model, Limine boot protocol, paging and physical frame management, interrupts, and I/O drivers.
+- **Virtual File System (VFS) and Hybrid Path Architecture**:
+  - [🇷🇺 Русский](architecture/vfs.ru.md) | [🇬🇧 English](architecture/vfs.en.md)
+  - Unified VFS namespace, parallel Unix (`/bin`, `/etc`) and Windows NT (`/win/drives/c/`, `/win/registry`) coexistence, `C:\` translation engine, case-insensitive lookups, in-memory RamFS, POSIX ustar initramfs unpacker, and unified user profiles.
 
 ### 2. Localization Subsystem ([`localization/`](localization/))
 - **Localization Subsystem Overview**:

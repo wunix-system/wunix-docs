@@ -17,6 +17,9 @@
 - **Архитектура ядра Wunix Core**:
   - [🇷🇺 Русский](architecture/kernel.ru.md) | [🇬🇧 English](architecture/kernel.en.md)
   - Внутреннее устройство ядра: Higher-Half адресное пространство, протокол загрузки Limine, организация виртуальной и физической памяти, прерывания и подсистема ввода-вывода.
+- **Виртуальная файловая система (VFS) и гибридная архитектура путей**:
+  - [🇷🇺 Русский](architecture/vfs.ru.md) | [🇬🇧 English](architecture/vfs.en.md)
+  - Единое дерево VFS, параллельное сосуществование Unix (`/bin`, `/etc`) и Windows NT (`/win/drives/c/`, `/win/registry`), механизм трансляции `C:\` и регистронезависимый поиск, in-memory RamFS, парсер ustar initramfs и единый профиль пользователя.
 
 ### 2. Подсистема локализации ([`localization/`](localization/))
 - **Обзор подсистемы локализации**:

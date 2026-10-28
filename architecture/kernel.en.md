@@ -49,6 +49,12 @@ wunix/kernel/src/
 │   ├── frame.rs              # 4 KiB physical frame allocator utilizing Limine memmap
 │   ├── paging.rs             # 4-level page table management and virtual translation
 │   └── heap.rs               # Dynamic kernel heap (`alloc`, `linked_list_allocator`)
+├── fs/                       # Virtual File System (VFS) and storage subsystem
+│   ├── path.rs               # Path engine (C:\ -> /win/drives/c/), slash normalization, case-insensitivity
+│   ├── ramfs.rs              # In-memory FS powered by spin::RwLock, files, directories, and symlinks
+│   ├── tar.rs                # POSIX ustar initramfs unpacker
+│   ├── vfs.rs                # Inode, FileSystem traits, Metadata, DirEntry structures, VfsError
+│   └── mod.rs                # Root mounting ('/'), path resolution, Unix/NT skeleton, unified profile symlink
 ├── task/                     # Multitasking subsystem (in development)
 │   ├── context.rs            # CPU register context state
 │   └── scheduler.rs          # Kernel thread scheduler
@@ -93,3 +99,17 @@ Memory initialization proceeds across three distinct phases:
   - Hardware cursor and line-clear primitives;
   - High-contrast visual palette (white text on dark background).
 - Characters are rendered via the 8×16 monospaced bitmap font engine in [`drivers/font.rs`](file:///home/valdis/my-os/wunix/kernel/src/drivers/font.rs).
+
+---
+
+## 6. VFS Subsystem and Storage Engine
+
+The Virtual File System subsystem ([`fs/mod.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/mod.rs)) manages a unified kernel namespace tree:
+
+1. **VFS Abstractions (`fs/vfs.rs`)**: `Inode: Send + Sync` and `FileSystem: Send + Sync` traits decouple core kernel logic from specific filesystem on-disk layouts.
+2. **In-Memory Storage (RamFS, `fs/ramfs.rs`)**: An in-memory filesystem `RamFs` is mounted as root (`/`), utilizing granular `spin::RwLock` instances embedded directly within `RamInode` objects.
+3. **Hybrid Tree and Path Translation (`fs/path.rs`)**: A combined directory skeleton hosts standard Unix directories (`/bin`, `/etc`, `/home`, `/dev`, `/proc`, `/sys`) alongside Windows NT structures (`/win/drives/c/Windows/System32`, `/win/registry`). Paths matching `C:\...` are automatically mapped to `/win/drives/c/...`, and queries within `/win` run case-insensitively.
+4. **Unified User Profile**: A symbolic link at `/win/drives/c/Users/user -> /home/user` provides seamless access to user documents and settings across POSIX tools and ported Win32 binaries.
+5. **Initramfs Unpacking (`fs/tar.rs`)**: An in-memory TAR archive delivered via the Limine boot protocol (`ModuleRequest`) is parsed as POSIX ustar (512-byte blocks) and populated over the root `RamFs`.
+
+For complete architectural details, see [Virtual File System (VFS) and Hybrid Path Architecture](vfs.en.md).
