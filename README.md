@@ -1,24 +1,19 @@
-# Документация операционной системы Wunix
+# Wunix Documentation / Документация Wunix
 
-Настоящий каталог содержит официальную техническую документацию независимой UNIX-подобной операционной системы **Wunix**, разрабатываемой на языке программирования Rust.
+Select your language / Выберите язык документации:
+
+- 🇷🇺 **[Документация на русском языке (RU)](README.ru.md)**
+- 🇬🇧 **[Documentation in English (EN)](README.en.md)**
 
 ---
 
-## Структура документации
+## Quick Navigation / Быстрая навигация
 
-Документация сгруппирована по функциональным разделам:
-
-### 1. Архитектура и системный дизайн ([`architecture/`](architecture/))
-- **[Общая архитектура Wunix](architecture/overview.md)** — концепция системы, слои абстракции (Applications, Desktop, Base, System API, Core, Hardware), модель пакетов (WPM/WSP) и циклы релизов.
-- **[Архитектура ядра Wunix Core](architecture/kernel.md)** — внутреннее устройство ядра: Higher-Half адресное пространство, протокол загрузки Limine, организация виртуальной и физической памяти, прерывания и подсистема ввода-вывода.
-
-### 2. Подсистема локализации ([`localization/`](localization/))
-- **[Обзор подсистемы локализации](localization/README.md)** — архитектура интернационализации, атомарное хранилище состояния (`AtomicU8`), параметры загрузки ядра `cmdline`, шрифтовой рендерер и раскладки клавиатуры.
-- **[Руководство по локализации (RU)](localization/translation-guide.ru.md)** — руководство по добавлению нового языка: спецификация сообщений для переводчиков и техническая инструкция для разработчиков.
-- **[Localization Guide (EN)](localization/translation-guide.en.md)** — complete translation guide for writers, translators, and systems engineers.
-
-### 3. Дорожная карта разработки ([`roadmap/`](roadmap/))
-- **[Дорожная карта и статус разработки](roadmap/roadmap.md)** — этапы развития Wunix от первичного аппаратного bring-up до пользовательского режима (Ring 3) и командной оболочки WSH.
-
-### 4. Руководство разработчика ([`guides/`](guides/))
-- **[Сборка, запуск и отладка ядра](guides/development.md)** — требования к тулчейну, компиляция ядра, создание загрузочного ISO-образа, параметры виртуализации QEMU и отладка через COM1.
+| Section / Раздел | 🇷🇺 Русский (RU) | 🇬🇧 English (EN) |
+|---|---|---|
+| **System Overview / Обзор системы** | [`architecture/overview.ru.md`](architecture/overview.ru.md) | [`architecture/overview.en.md`](architecture/overview.en.md) |
+| **Kernel Architecture / Архитектура ядра** | [`architecture/kernel.ru.md`](architecture/kernel.ru.md) | [`architecture/kernel.en.md`](architecture/kernel.en.md) |
+| **Localization Subsystem / Локализация** | [`localization/README.ru.md`](localization/README.ru.md) | [`localization/README.en.md`](localization/README.en.md) |
+| **Translation Guide / Руководство по переводу** | [`localization/translation-guide.ru.md`](localization/translation-guide.ru.md) | [`localization/translation-guide.en.md`](localization/translation-guide.en.md) |
+| **Development Roadmap / Дорожная карта** | [`roadmap/roadmap.ru.md`](roadmap/roadmap.ru.md) | [`roadmap/roadmap.en.md`](roadmap/roadmap.en.md) |
+| **Build & Run Guide / Сборка и запуск** | [`guides/development.ru.md`](guides/development.ru.md) | [`guides/development.en.md`](guides/development.en.md) |

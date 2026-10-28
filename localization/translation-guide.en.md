@@ -1,3 +1,5 @@
+[ 🇷🇺 Русский ](translation-guide.ru.md) | [ 🇬🇧 English ](translation-guide.en.md)
+
 # Wunix Operating System Localization Guide
 
 This document serves as the official specification and technical guide for integrating new languages into the **Wunix** operating system.
