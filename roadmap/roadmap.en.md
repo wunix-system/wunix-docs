@@ -17,6 +17,9 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **5** | **VFS & Storage** | VFS traits, Ramdisk / Initramfs (TAR), DeviceManager | ✅ **Completed** | Root FS (`/`) mounted, initramfs extracted, hybrid drive `C:\`, file read/write validation. |
 | **6** | **Userland (Ring 3)** | Process address space, `syscall` / `sysret`, Cargo Wksp | ✅ **Completed** | Ring 0/3 privilege separation, isolated PML4, fast syscalls, `libwunix` crate, #GP isolation. |
 | **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | 🔄 **Next Phase** | Interactive user console in Ring 3, launching binaries from VFS. |
+| **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ⏳ *Planned* | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
+| **9** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
+| **10** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
 ---
 
@@ -42,6 +45,15 @@ This document tracks the milestones of the Wunix kernel and base system, current
          │
          ▼
 [7. First Process: init / wsh] ────► [IN PROGRESS / NEXT STAGE]
+         │
+         ▼
+[8. VirtIO Drivers: QEMU Full Stack] (PCI, virtio-blk, virtio-net, virtio-gpu, virtio-input)
+         │
+         ▼
+[9. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+         │
+         ▼
+[10. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
 ```
 
 ---
@@ -109,3 +121,27 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [ ] Terminal driver (TTY) for console I/O in Ring 3.
 - [ ] Basic `wsh` (Wunix Shell): prompt, argument parsing, running commands.
 - [ ] Porting core UNIX utilities: `echo`, `cat`, `ls`, `clear`, `uname`.
+
+### Phase 8: VirtIO Drivers (QEMU Full Stack Virtualization)
+- [ ] PCI / PCIe bus scan (`pci::scan()`, configuration space enumeration, Vendor ID, Device ID, BARs).
+- [ ] VirtIO queue infrastructure (Virtqueue: Split Virtqueue descriptors, Available and Used rings).
+- [ ] Block storage driver `virtio-blk` (LBA sector read/write, persistent disk storage in QEMU).
+- [ ] Network adapter driver `virtio-net` (Ethernet frame RX/TX, integration with `smoltcp` stack).
+- [ ] Input device driver `virtio-input` (tablet/mouse with absolute cursor coordinate support).
+- [ ] Video display driver `virtio-gpu` (hardware display mode switching, 2D acceleration).
+
+### Phase 9: Redox OS Driver Import & Adaptation
+- [ ] Adapter layer for Redox OS bus and device traits mapped to Wunix VFS and DeviceManager.
+- [ ] AHCI SATA storage controller driver (support for physical HDDs and SATA SSDs).
+- [ ] NVMe controller driver (fast PCIe M.2 SSDs, Submission/Completion ring queues).
+- [ ] Intel Gigabit Ethernet: `e1000` and `e1000e` NIC drivers.
+- [ ] Realtek Gigabit Ethernet: `rtl8168` and `rtl8111` onboard NIC drivers.
+- [ ] USB xHCI Host Controller (USB 3.0: support for flash drives, USB keyboards and mice).
+
+### Phase 10: Hardware Inventory & Driver Deficit Coverage
+- [ ] Comprehensive hardware coverage audit: supported controllers inventory and deficit gap mapping.
+- [ ] ACPI subsystem (RSDP, MADT, FADT, DSDT table parsing for power management and SMP cores).
+- [ ] APIC / IO-APIC interrupt controller (replacing legacy PIC 8259 for modern multicore CPUs).
+- [ ] Audio subsystem: Intel High Definition Audio (HDA / Realtek ALC) sound controller driver.
+- [ ] Wireless networking: basic Wi-Fi stack (Intel Wireless WiFi / Atheros).
+- [ ] Hardware diagnostic utilities for Wunix Shell: `lspci`, `lsusb`, `lshw`.
