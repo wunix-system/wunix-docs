@@ -16,8 +16,8 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **4** | **Kernel Multitasking** | TCB, thread stacks, `context_switch`, scheduler | ✅ **Completed** | Preemptive multitasking (Round-Robin, 50 ms timeslice), kernel thread stack isolation. |
 | **5** | **VFS & Storage** | VFS traits, Ramdisk / Initramfs (TAR), DeviceManager | ✅ **Completed** | Root FS (`/`) mounted, initramfs extracted, hybrid drive `C:\`, file read/write validation. |
 | **6** | **Userland (Ring 3)** | Process address space, `syscall` / `sysret`, Cargo Wksp | ✅ **Completed** | Ring 0/3 privilege separation, isolated PML4, fast syscalls, `libwunix` crate, #GP isolation. |
-| **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | 🔄 **Next Phase** | Interactive user console in Ring 3, launching binaries from VFS. |
-| **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ⏳ *Planned* | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
+| **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | ✅ **Completed** | Interactive user console in Ring 3, launching binaries from VFS (init, wsh, echo, cat, ls, clear, uname, rm, free, top). |
+| **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | 🔄 **In Progress** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
 | **9** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
 | **10** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
@@ -44,10 +44,10 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [6. Transition to Ring 3] (User Space isolation, syscall / sysret) ──► [COMPLETED]
          │
          ▼
-[7. First Process: init / wsh] ────► [IN PROGRESS / NEXT STAGE]
+[7. First Process: init / wsh] ─────────────────────────────────► [COMPLETED]
          │
          ▼
-[8. VirtIO Drivers: QEMU Full Stack] (PCI, virtio-blk, virtio-net, virtio-gpu, virtio-input)
+[8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [IN PROGRESS / NEXT STAGE]
          │
          ▼
 [9. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
@@ -116,11 +116,14 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [x] Successful Ring 3 verification: `sys_write` / `sys_exit` execution and privileged instruction `#GP` trap.
 
 ### Phase 7: Userland Environment & Wunix Shell
-- [ ] ELF64 executable loader and parser to run binaries from VFS.
-- [ ] First user-space init process: `/bin/init`.
-- [ ] Terminal driver (TTY) for console I/O in Ring 3.
-- [ ] Basic `wsh` (Wunix Shell): prompt, argument parsing, running commands.
-- [ ] Porting core UNIX utilities: `echo`, `cat`, `ls`, `clear`, `uname`.
+- [x] ELF64 executable loader and parser (`kernel/src/task/elf.rs`): `PT_LOAD` segments mapping into Ring 3 PML4, BSS zeroing.
+- [x] First user-space init process: `/bin/init` (PID 1) spawning shell and running a supervisor loop.
+- [x] Terminal driver (TTY): ANSI SGR color formatting, inverting block cursor, buffered stdin reading.
+- [x] Userland system calls: `SYS_EXECVE` (System V ABI argc/argv passing), `SYS_OPEN`, `SYS_CLOSE`, `SYS_UNLINK`, `SYS_GETCWD`, `SYS_CHDIR`, `SYS_SYSINFO`, `SYS_UNAME`, `SYS_GETDENTS64`.
+- [x] Basic `wsh` (Wunix Shell): interactive LineEditor with arrow keys, history buffer, prompt (`valdis@wunix:~$ ` / `C:\> `), built-in commands (`cd`, `help`, `history`, `clear`, `exit`), binary execution.
+- [x] Porting and building core UNIX utilities in `/bin/`: `init`, `wsh`, `echo`, `cat`, `ls`, `clear`, `uname`, `pwd`, `touch`, `rm`, `top`, `free`.
+- [x] Interrupt signal handling: `Ctrl+C` terminates child processes safely without dropping kernel or shell.
+- [x] Userland internationalization (`libwunix::i18n`): automatic OS language detection via `/etc/locale` and kernel boot args.
 
 ### Phase 8: VirtIO Drivers (QEMU Full Stack Virtualization)
 - [ ] PCI / PCIe bus scan (`pci::scan()`, configuration space enumeration, Vendor ID, Device ID, BARs).
