@@ -18,8 +18,9 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **6** | **Userland (Ring 3)** | Process address space, `syscall` / `sysret`, Cargo Wksp | ✅ **Completed** | Ring 0/3 privilege separation, isolated PML4, fast syscalls, `libwunix` crate, #GP isolation. |
 | **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | ✅ **Completed** | Interactive user console in Ring 3, launching binaries from VFS (init, wsh, echo, cat, ls, clear, uname, rm, free, top). |
 | **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | 🔄 **In Progress** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
-| **9** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
-| **10** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
+| **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Go/Rust network stack, sockets, `ping`, `curl`, `fdisk`, `lsblk`, `mount` | ⏳ *Planned* | Networking and storage in VM: packet routing, network/disk CLI tools, static Go/Rust binaries support. |
+| **10** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
+| **11** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
 ---
 
@@ -50,10 +51,13 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [IN PROGRESS / NEXT STAGE]
          │
          ▼
-[9. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+[9. Network Stack, Sockets & Disk Tools] (Go/Rust network stack, Linux ABI, ping, curl, fdisk, mount)
          │
          ▼
-[10. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
+[10. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+         │
+         ▼
+[11. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
 ```
 
 ---
@@ -129,11 +133,32 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [ ] PCI / PCIe bus scan (`pci::scan()`, configuration space enumeration, Vendor ID, Device ID, BARs).
 - [ ] VirtIO queue infrastructure (Virtqueue: Split Virtqueue descriptors, Available and Used rings).
 - [ ] Block storage driver `virtio-blk` (LBA sector read/write, persistent disk storage in QEMU).
-- [ ] Network adapter driver `virtio-net` (Ethernet frame RX/TX, integration with `smoltcp` stack).
+- [ ] Network adapter driver `virtio-net` (Ethernet frame RX/TX, integration with network stack).
 - [ ] Input device driver `virtio-input` (tablet/mouse with absolute cursor coordinate support).
 - [ ] Video display driver `virtio-gpu` (hardware display mode switching, 2D acceleration).
 
-### Phase 9: Redox OS Driver Import & Adaptation
+### Phase 9: Network Stack, Sockets & Base Image Expansion
+- [ ] Minimal Linux ABI in kernel for static binaries (Go / Rust):
+  - [ ] Memory allocation syscalls `SYS_MMAP` (9) and `SYS_MUNMAP` (11).
+  - [ ] Architecture control syscall `SYS_ARCH_PRCTL` (158) to set `FS_BASE` register (Go goroutine `g` context & thread-local storage).
+  - [ ] Multithreading and synchronization syscalls: `SYS_CLONE` (56), `SYS_FUTEX` (202), `SYS_SET_TID_ADDRESS` (218).
+  - [ ] Entropy and signals: `SYS_GETRANDOM` (318), stub handlers for `SYS_RT_SIGACTION` (13) and `SYS_RT_SIGPROCMASK` (14).
+- [ ] Network stack and BSD socket interface:
+  - [ ] Packet processing for `virtio-net` driver (via `smoltcp` in Rust or userland network daemon in Go).
+  - [ ] Socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49).
+  - [ ] Protocol support: ARP, IPv4, ICMP (Echo Request/Reply for ping), UDP (DNS resolution), TCP.
+- [ ] Network utility suite in base image:
+  - [ ] `ping` utility: ICMP Echo requests and RTT latency measurement.
+  - [ ] `curl` / `wget` utility: HTTP GET requests and file downloads.
+  - [ ] `ip` utility: interface inspection, IP address and default gateway route assignment.
+  - [ ] `ss` / `netstat` utility: active socket and connection monitoring.
+- [ ] Storage utilities and filesystem support:
+  - [ ] `lsblk` utility: block device enumeration (`/dev/vda`).
+  - [ ] `fdisk` utility: MBR / GPT partition table editing on persistent disk.
+  - [ ] `mount` and `umount` utilities: mounting partition filesystems (FAT32 / ext2) into VFS.
+  - [ ] Persistence verification: saving user files to QCOW2 virtual disk across QEMU reboots.
+
+### Phase 10: Redox OS Driver Import & Adaptation
 - [ ] Adapter layer for Redox OS bus and device traits mapped to Wunix VFS and DeviceManager.
 - [ ] AHCI SATA storage controller driver (support for physical HDDs and SATA SSDs).
 - [ ] NVMe controller driver (fast PCIe M.2 SSDs, Submission/Completion ring queues).
@@ -141,7 +166,7 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [ ] Realtek Gigabit Ethernet: `rtl8168` and `rtl8111` onboard NIC drivers.
 - [ ] USB xHCI Host Controller (USB 3.0: support for flash drives, USB keyboards and mice).
 
-### Phase 10: Hardware Inventory & Driver Deficit Coverage
+### Phase 11: Hardware Inventory & Driver Deficit Coverage
 - [ ] Comprehensive hardware coverage audit: supported controllers inventory and deficit gap mapping.
 - [ ] ACPI subsystem (RSDP, MADT, FADT, DSDT table parsing for power management and SMP cores).
 - [ ] APIC / IO-APIC interrupt controller (replacing legacy PIC 8259 for modern multicore CPUs).
