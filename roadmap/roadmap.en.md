@@ -17,8 +17,8 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **5** | **VFS & Storage** | VFS traits, Ramdisk / Initramfs (TAR), DeviceManager | ✅ **Completed** | Root FS (`/`) mounted, initramfs extracted, hybrid drive `C:\`, file read/write validation. |
 | **6** | **Userland (Ring 3)** | Process address space, `syscall` / `sysret`, Cargo Wksp | ✅ **Completed** | Ring 0/3 privilege separation, isolated PML4, fast syscalls, `libwunix` crate, #GP isolation. |
 | **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | ✅ **Completed** | Interactive user console in Ring 3, launching binaries from VFS (init, wsh, echo, cat, ls, clear, uname, rm, free, top). |
-| **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | 🔄 **In Progress** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
-| **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Go/Rust network stack, sockets, `ping`, `curl`, `fdisk`, `lsblk`, `mount` | ⏳ *Planned* | Networking and storage in VM: packet routing, network/disk CLI tools, static Go/Rust binaries support. |
+| **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ✅ **Completed** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
+| **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Go/Rust network stack, sockets, `ping`, `curl`, `fdisk`, `lsblk`, `mount` | 🔄 **In Progress** | Production Linux ABI (Go/Rust runtimes verified). Networking and storage in VM: packet routing, network/disk CLI tools. |
 | **10** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
 | **11** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
@@ -48,10 +48,10 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [7. First Process: init / wsh] ─────────────────────────────────► [COMPLETED]
          │
          ▼
-[8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [IN PROGRESS / NEXT STAGE]
+[8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [COMPLETED]
          │
          ▼
-[9. Network Stack, Sockets & Disk Tools] (Go/Rust network stack, Linux ABI, ping, curl, fdisk, mount)
+[9. Network Stack, Sockets & Disk Tools] ───────────────────────► [IN PROGRESS: Linux ABI ready, sockets & tools]
          │
          ▼
 [10. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
@@ -130,19 +130,22 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [x] Userland internationalization (`libwunix::i18n`): automatic OS language detection via `/etc/locale` and kernel boot args.
 
 ### Phase 8: VirtIO Drivers (QEMU Full Stack Virtualization)
-- [ ] PCI / PCIe bus scan (`pci::scan()`, configuration space enumeration, Vendor ID, Device ID, BARs).
-- [ ] VirtIO queue infrastructure (Virtqueue: Split Virtqueue descriptors, Available and Used rings).
-- [ ] Block storage driver `virtio-blk` (LBA sector read/write, persistent disk storage in QEMU).
-- [ ] Network adapter driver `virtio-net` (Ethernet frame RX/TX, integration with network stack).
-- [ ] Input device driver `virtio-input` (tablet/mouse with absolute cursor coordinate support).
-- [ ] Video display driver `virtio-gpu` (hardware display mode switching, 2D acceleration).
+- [x] PCI / PCIe bus scan (`pci::scan()`, configuration space enumeration, Vendor ID, Device ID, BARs).
+- [x] VirtIO queue infrastructure (Virtqueue: Split Virtqueue descriptors, Available and Used rings).
+- [x] Block storage driver `virtio-blk` (LBA sector read/write, persistent disk storage in QEMU).
+- [x] Network adapter driver `virtio-net` (Ethernet frame RX/TX, integration with network stack).
+- [x] Input device driver `virtio-input` (tablet/mouse with absolute cursor coordinate support).
+- [x] Video display driver `virtio-gpu` (hardware display mode switching, 2D acceleration).
 
 ### Phase 9: Network Stack, Sockets & Base Image Expansion
-- [ ] Minimal Linux ABI in kernel for static binaries (Go / Rust):
-  - [ ] Memory allocation syscalls `SYS_MMAP` (9) and `SYS_MUNMAP` (11).
-  - [ ] Architecture control syscall `SYS_ARCH_PRCTL` (158) to set `FS_BASE` register (Go goroutine `g` context & thread-local storage).
-  - [ ] Multithreading and synchronization syscalls: `SYS_CLONE` (56), `SYS_FUTEX` (202), `SYS_SET_TID_ADDRESS` (218).
-  - [ ] Entropy and signals: `SYS_GETRANDOM` (318), stub handlers for `SYS_RT_SIGACTION` (13) and `SYS_RT_SIGPROCMASK` (14).
+- [x] Production Linux ABI in kernel for static binaries (Go / Rust):
+  - [x] Memory allocation syscalls `SYS_MMAP` (9) and `SYS_MUNMAP` (11) with VMA tracker and demand paging.
+  - [x] Architecture control syscall `SYS_ARCH_PRCTL` (158) to set `FS_BASE` register (Go goroutine `g` context & thread-local storage) with context switch preservation.
+  - [x] Multithreading and synchronization syscalls: `SYS_CLONE` (56), `SYS_FUTEX` (202), `SYS_SET_TID_ADDRESS` (218).
+  - [x] Entropy and signals: `SYS_GETRANDOM` (318), `SYS_RT_SIGACTION` (13), `SYS_RT_SIGPROCMASK` (14), `SYS_SIGALTSTACK` (131).
+  - [x] Asynchronous I/O for Go Netpoller: epoll reactor (`SYS_EPOLL_CREATE1`, `SYS_EPOLL_CTL`, `SYS_EPOLL_WAIT`), ring buffer pipes (`SYS_PIPE2`), `eventfd2`, `SYS_FCNTL` (O_NONBLOCK).
+  - [x] System V ABI stack with Auxiliary Vectors (`auxv`), `envp` and 16-byte alignment.
+  - [x] Complete Go runtime verification: successfully passed comprehensive tests for concurrency/channels, allocator/GC, and async netpoller/timers.
 - [ ] Network stack and BSD socket interface:
   - [ ] Packet processing for `virtio-net` driver (via `smoltcp` in Rust or userland network daemon in Go).
   - [ ] Socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49).
