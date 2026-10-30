@@ -18,9 +18,10 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **6** | **Userland (Ring 3)** | Process address space, `syscall` / `sysret`, Cargo Wksp | ✅ **Completed** | Ring 0/3 privilege separation, isolated PML4, fast syscalls, `libwunix` crate, #GP isolation. |
 | **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | ✅ **Completed** | Interactive user console in Ring 3, launching binaries from VFS (init, wsh, echo, cat, ls, clear, uname, rm, free, top). |
 | **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ✅ **Completed** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
-| **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Go/Rust network stack, sockets, `ping`, `curl`, `fdisk`, `lsblk`, `mount` | 🔄 **In Progress** | Production Linux ABI (Go/Rust runtimes verified). Networking and storage in VM: packet routing, network/disk CLI tools. |
-| **10** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
-| **11** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
+| **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Rust network stack (`smoltcp`), BSD sockets, `ping`, `curl`, `ip`, `fdisk`, `lsblk`, `mount` | 🔄 **In Progress** | Production Linux ABI (Ring 3 runtimes verified). Rust network stack: packet RX/TX, TCP/UDP/ICMP, persistent disk partition mounting. |
+| **10** | **Users & Access Control** | UID/GID model, `/etc/passwd`, `/etc/shadow`, POSIX VFS permissions (rwx, suid), `login`, `su`, `sudo`, `chmod`, `chown` | ⏳ *Planned* | Secure multi-user environment, password authentication, process privilege separation, and VFS access control. |
+| **11** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
+| **12** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
 ---
 
@@ -51,13 +52,16 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [COMPLETED]
          │
          ▼
-[9. Network Stack, Sockets & Disk Tools] ───────────────────────► [IN PROGRESS: Linux ABI ready, sockets & tools]
+[9. Rust Network Stack & Storage Tools] ────────────────────────► [IN PROGRESS: Linux ABI ready, sockets, net & disks]
          │
          ▼
-[10. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+[10. Users & Access Control] (UID/GID, /etc/passwd, shadow, VFS permissions, su/sudo)
          │
          ▼
-[11. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
+[11. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+         │
+         ▼
+[12. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
 ```
 
 ---
@@ -137,31 +141,56 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [x] Input device driver `virtio-input` (tablet/mouse with absolute cursor coordinate support).
 - [x] Video display driver `virtio-gpu` (hardware display mode switching, 2D acceleration).
 
-### Phase 9: Network Stack, Sockets & Base Image Expansion
-- [x] Production Linux ABI in kernel for static binaries (Go / Rust):
+### Phase 9: Rust Network Stack & Storage Tools
+- [x] Production Linux ABI in kernel for static binaries (Rust / C / Go):
   - [x] Memory allocation syscalls `SYS_MMAP` (9) and `SYS_MUNMAP` (11) with VMA tracker and demand paging.
-  - [x] Architecture control syscall `SYS_ARCH_PRCTL` (158) to set `FS_BASE` register (Go goroutine `g` context & thread-local storage) with context switch preservation.
+  - [x] Architecture control syscall `SYS_ARCH_PRCTL` (158) to set `FS_BASE` register (thread TLS) with context switch preservation.
   - [x] Multithreading and synchronization syscalls: `SYS_CLONE` (56), `SYS_FUTEX` (202), `SYS_SET_TID_ADDRESS` (218).
   - [x] Entropy and signals: `SYS_GETRANDOM` (318), `SYS_RT_SIGACTION` (13), `SYS_RT_SIGPROCMASK` (14), `SYS_SIGALTSTACK` (131).
-  - [x] Asynchronous I/O for Go Netpoller: epoll reactor (`SYS_EPOLL_CREATE1`, `SYS_EPOLL_CTL`, `SYS_EPOLL_WAIT`), ring buffer pipes (`SYS_PIPE2`), `eventfd2`, `SYS_FCNTL` (O_NONBLOCK).
+  - [x] Asynchronous I/O: epoll reactor (`SYS_EPOLL_CREATE1`, `SYS_EPOLL_CTL`, `SYS_EPOLL_WAIT`), ring buffer pipes (`SYS_PIPE2`), `eventfd2`, `SYS_FCNTL` (O_NONBLOCK).
   - [x] System V ABI stack with Auxiliary Vectors (`auxv`), `envp` and 16-byte alignment.
-  - [x] Complete Go runtime verification: successfully passed comprehensive tests for concurrency/channels, allocator/GC, and async netpoller/timers.
-- [ ] Network stack and BSD socket interface:
-  - [ ] Packet processing for `virtio-net` driver (via `smoltcp` in Rust or userland network daemon in Go).
-  - [ ] Socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49).
-  - [ ] Protocol support: ARP, IPv4, ICMP (Echo Request/Reply for ping), UDP (DNS resolution), TCP.
-- [ ] Network utility suite in base image:
+  - [x] Complete runtime syscall verification: successfully passed comprehensive tests for concurrency/channels, allocator/GC, and async I/O/timers.
+- [ ] Kernel network stack in Rust (`smoltcp`) and BSD socket interface:
+  - [ ] Packet processing for `virtio-net` driver integrated with `smoltcp` (in-kernel Ethernet frame handling, ring RX/TX buffers).
+  - [ ] Linux socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49), `SYS_LISTEN` (50), `SYS_ACCEPT` (43).
+  - [ ] Protocol support: ARP, IPv4, ICMP (Echo Request/Reply for ping), UDP (DNS resolution), and TCP (reliable stream connection).
+- [ ] Network utility suite in base image (Userland in Rust):
   - [ ] `ping` utility: ICMP Echo requests and RTT latency measurement.
   - [ ] `curl` / `wget` utility: HTTP GET requests and file downloads.
   - [ ] `ip` utility: interface inspection, IP address and default gateway route assignment.
   - [ ] `ss` / `netstat` utility: active socket and connection monitoring.
 - [ ] Storage utilities and filesystem support:
-  - [ ] `lsblk` utility: block device enumeration (`/dev/vda`).
+  - [ ] Integration of `virtio-blk` driver with kernel device subsystem (`/dev/vda`).
+  - [ ] `lsblk` utility: block device enumeration.
   - [ ] `fdisk` utility: MBR / GPT partition table editing on persistent disk.
-  - [ ] `mount` and `umount` utilities: mounting partition filesystems (FAT32 / ext2) into VFS.
+  - [ ] Persistent filesystem support (FAT32 / ext2) and syscalls `SYS_MOUNT` (165), `SYS_UMOUNT2` (166).
+  - [ ] `mount` and `umount` utilities: mounting partition filesystems into VFS (`/mnt/...`).
   - [ ] Persistence verification: saving user files to QCOW2 virtual disk across QEMU reboots.
 
-### Phase 10: Redox OS Driver Import & Adaptation
+### Phase 10: Users & Access Control (Multi-User & Security)
+- [ ] Process and user identity model:
+  - [ ] Account fields in TCB/PCB: UID, GID, Effective UID (EUID), Effective GID (EGID), Saved UID/GID.
+  - [ ] Superuser `root` (UID 0, GID 0) and default unprivileged user (`valdis`, UID 1000).
+  - [ ] Identity syscalls: `SYS_GETUID` (102), `SYS_SETUID` (105), `SYS_GETGID` (104), `SYS_SETGID` (106), `SYS_GETEUID` (107), `SYS_GETEGID` (108).
+- [ ] Account configuration database in VFS:
+  - [ ] `/etc/passwd`: accounts, UID/GID, home directories (`/home/<user>`), login shell (`/bin/wsh`).
+  - [ ] `/etc/group`: user groups and membership lists.
+  - [ ] `/etc/shadow`: secure storage of hashed passwords (SHA-256 / SHA-512) with `root`-only access (`0600`).
+- [ ] VFS access permissions (POSIX Permissions):
+  - [ ] Inode metadata: permission mode `mode` (Owner, Group, Others with `rwx` flags), `SUID`, `SGID`, `Sticky bit`.
+  - [ ] Kernel-level permission checks during `SYS_OPEN`, `SYS_READ`, `SYS_WRITE`, `SYS_EXECVE`, `SYS_UNLINK`.
+  - [ ] File creation mask `umask` (`SYS_UMASK`, 95).
+  - [ ] Permission management syscalls: `SYS_CHMOD` (90), `SYS_FCHMOD` (91), `SYS_CHOWN` (92), `SYS_FCHOWN` (93).
+- [ ] User and session management utilities for WSH:
+  - [ ] `login` utility: terminal password authentication.
+  - [ ] `su` and `sudo` utilities: privilege switching and executing commands as root.
+  - [ ] `id` and `whoami` utilities: displaying current user identity and groups.
+  - [ ] `passwd` utility: interactive account password change.
+  - [ ] `useradd` and `userdel` utilities: user account creation and deletion with `/home/<user>`.
+  - [ ] `chmod` and `chown` utilities: modifying file permissions and ownership.
+  - [ ] `wsh` integration: prompt updates based on privileges (`$` for unprivileged user, `#` for root).
+
+### Phase 11: Redox OS Driver Import & Adaptation
 - [ ] Adapter layer for Redox OS bus and device traits mapped to Wunix VFS and DeviceManager.
 - [ ] AHCI SATA storage controller driver (support for physical HDDs and SATA SSDs).
 - [ ] NVMe controller driver (fast PCIe M.2 SSDs, Submission/Completion ring queues).
@@ -169,7 +198,7 @@ This document tracks the milestones of the Wunix kernel and base system, current
 - [ ] Realtek Gigabit Ethernet: `rtl8168` and `rtl8111` onboard NIC drivers.
 - [ ] USB xHCI Host Controller (USB 3.0: support for flash drives, USB keyboards and mice).
 
-### Phase 11: Hardware Inventory & Driver Deficit Coverage
+### Phase 12: Hardware Inventory & Driver Deficit Coverage
 - [ ] Comprehensive hardware coverage audit: supported controllers inventory and deficit gap mapping.
 - [ ] ACPI subsystem (RSDP, MADT, FADT, DSDT table parsing for power management and SMP cores).
 - [ ] APIC / IO-APIC interrupt controller (replacing legacy PIC 8259 for modern multicore CPUs).
