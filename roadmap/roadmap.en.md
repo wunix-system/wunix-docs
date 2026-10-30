@@ -52,10 +52,10 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [8. VirtIO Drivers: QEMU Full Stack] ───────────────────────────► [COMPLETED]
          │
          ▼
-[9. Rust Network Stack & Storage Tools] ────────────────────────► [IN PROGRESS: Linux ABI ready, sockets, net & disks]
+[9. Rust Network Stack & Storage Tools] ────────────────────────► [COMPLETED]
          │
          ▼
-[10. Users & Access Control] (UID/GID, /etc/passwd, shadow, VFS permissions, su/sudo)
+[10. Users & Access Control] ───────────────────────────────────► [IN PROGRESS: UID/GID, /etc/passwd, shadow, su/sudo]
          │
          ▼
 [11. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)

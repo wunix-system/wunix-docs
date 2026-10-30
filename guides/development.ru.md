@@ -2,95 +2,130 @@
 
 # Сборка, запуск и отладка Wunix
 
-Настоящий документ содержит инструкции по настройке сборочного окружения, компиляции ядра Wunix, формированию загрузочного ISO-образа и запуску в эмуляторе QEMU.
+Настоящий документ содержит исчерпывающее техническое руководство по настройке рабочего окружения, компиляции ядра и пользовательских утилит, подготовке файловых образов, формированию гибридного загрузочного ISO-образа и запуску операционной системы Wunix в эмуляторе QEMU.
 
 ---
 
-## 1. Системные требования и зависимости
+## 1. Системные требования и инструментарий
 
-Сборка ядра осуществляется на хост-системах Linux (x86_64). Необходимы следующие компоненты:
+Сборка ядра Wunix Core и пользовательских программ осуществляется на 64-битных Linux хост-системах (x86_64).
 
-- **Rust Nightly**: компилятор языка Rust с поддержкой `build-std` и кросс-компиляции без стандартной библиотеки.
-- **Компонент `rust-src`**: исходный код стандартных библиотек (`core`, `compiler_builtins`, `alloc`).
-- **QEMU (`qemu-system-x86_64`)**: эмулятор целевой платформы.
-- **xorriso**: утилита формирования гибридных образов ISO 9660 (El Torito / UEFI).
-- **make & git**: для сборки бинарных компонентов загрузчика Limine.
+### Необходимые пакеты хоста:
+- **Rust Toolchain**: ветка `nightly` с компонентом `rust-src` для сборки `no_std` компонентов и ядра с флагом `build-std`.
+- **Target `x86_64-unknown-none`**: целевая голая архитектура без стандартной библиотеки ОС.
+- **QEMU (`qemu-system-x86_64`)**: эмулятор целевой аппаратной платформы.
+- **xorriso**: утилита создания гибридных образов дисков ISO 9660 (El Torito / UEFI).
+- **dosfstools (`mkfs.vfat`)**: утилита форматирования разделов FAT32 для виртуального диска.
+- **make, git, python3, build-essential**: вспомогательные утилиты сборки и разметки образов.
 
-### Установка зависимостей в дистрибутивах Debian / Ubuntu:
-
+### Установка зависимостей (Debian / Ubuntu):
 ```bash
 sudo apt-get update
-sudo apt-get install -y qemu-system-x86 xorriso make git build-essential
+sudo apt-get install -y qemu-system-x86 xorriso make git build-essential dosfstools python3
 rustup toolchain install nightly
 rustup default nightly
+rustup target add x86_64-unknown-none
 rustup component add rust-src --toolchain nightly
 ```
 
 ---
 
-## 2. Компиляция ядра
+## 2. Быстрый запуск системы (`tools/run.sh`)
 
-Исходный код ядра находится в директории `wunix/kernel/`. Проект сконфигурирован для сборки под целевую платформу `x86_64-unknown-none`.
+В репозитории Wunix подготовлен автоматизированный сборочный конвейер — скрипт [`wunix/tools/run.sh`](file:///home/valdis/my-os/wunix/tools/run.sh), выполняющий полный цикл сборки и запуска «в одну команду»:
 
 ```bash
-cd wunix/kernel
+cd wunix
 
-# Проверка синтаксиса и типов:
-cargo check
+# Запуск Wunix на русском языке (по умолчанию):
+./tools/run.sh ru
 
-# Компиляция ядра в отладочной конфигурации:
-cargo build
+# Запуск Wunix на английском языке:
+./tools/run.sh en
 
-# Компиляция с оптимизациями:
-cargo build --release
+# Только сборка ISO-образа и постоянного диска без запуска QEMU:
+./tools/run.sh --build-only
+
+# Запуск с аппаратным ускорением KVM и 1 ГБ оперативной памяти:
+ENABLE_KVM=1 QEMU_RAM=1G ./tools/run.sh ru
 ```
 
-Результат сборки помещается по пути:
-`wunix/kernel/target/x86_64-unknown-none/debug/wunix-kernel` (или `release/wunix-kernel`).
+### Переменные окружения для тюнинга запуска:
+| Переменная | Значение по умолчанию | Описание |
+|---|:---:|---|
+| `WUNIX_LANG` | `ru` | Язык сообщений ядра и утилит (`ru` или `en`). |
+| `QEMU_RAM` | `512M` | Объем выделяемой оперативной памяти виртуальной машины. |
+| `QEMU_SMP` | `1` | Число процессорных ядер CPU. |
+| `ENABLE_KVM` | `0` | Включение аппаратного ускорения Linux KVM (`1` для ускорения). |
 
 ---
 
-## 3. Формирование загрузочного ISO-образа
+## 3. Детальные этапы сборочного конвейера
 
-Wunix использует загрузчик **Limine v8.x** с поддержкой протокола загрузки Higher-Half ядра.
+Если требуется выполнить сборку отдельных компонентов вручную, процесс делится на следующие стадии:
 
-### Структура директории `iso_root`:
-
+### 3.1. Компиляция ядра Wunix Core
+Ядро находится в `wunix/kernel/` и собирается под `x86_64-unknown-none`:
+```bash
+cd wunix/kernel
+cargo build --release
 ```
-iso_root/
-├── boot/
-│   ├── wunix-kernel         # Скомпилированный бинарный образ ядра
-│   ├── limine.conf          # Конфигурация меню и параметры cmdline
-│   ├── limine-bios.sys      # Системный модуль Limine BIOS
-│   ├── limine-bios-cd.bin   # Загрузочный сектор El Torito для CD/DVD
-│   └── limine-uefi-cd.bin   # Загрузочный сектор UEFI CD
-└── EFI/
-    └── BOOT/
-        ├── BOOTX64.EFI      # Загрузчик x86_64 UEFI
-        └── BOOTIA32.EFI     # Загрузчик IA-32 UEFI
+Результирующий бинарник помещается по пути:
+`wunix/target/x86_64-unknown-none/release/wunix-kernel` (или в `wunix/kernel/target/...`).
+
+### 3.2. Компиляция программ пользовательского пространства (Userland)
+Все консольные утилиты размещены в каталоге [`programs/`](file:///home/valdis/my-os/programs/) и компилируются со статическим relocation model:
+```bash
+cd programs/<имя_утилиты>
+RUSTFLAGS="-C relocation-model=static" cargo build --release --target x86_64-unknown-none
+```
+Собранные исполняемые файлы копируются в директорию корневой файловой системы `initramfs_root/bin/`.
+
+### 3.3. Создание виртуального жесткого диска (`build/disk.img`)
+Для верификации блочного драйвера `virtio-blk` и файловой системы FAT32 создается сырой образ постоянного диска размером 64 МиБ с разметкой MBR:
+```bash
+# 1. Создание пустого образа:
+qemu-img create -f raw build/disk.img 64M
+
+# 2. Запись сигнатуры MBR (раздел FAT32 LBA с сектора 2048 размером 63 МиБ):
+python3 -c "
+import struct
+with open('build/disk.img', 'r+b') as f:
+    f.seek(446)
+    f.write(struct.pack('<BBBBBBBBII', 0x80, 0, 1, 0, 0x0c, 0, 0, 0, 2048, 129024))
+    f.seek(510)
+    f.write(b'\x55\xaa')
+"
+
+# 3. Форматирование раздела 1 в файловую систему FAT32:
+mkfs.vfat -F 32 --offset=2048 build/disk.img
 ```
 
-### Генерация гибридного ISO через `xorriso`:
+### 3.4. Упаковка корневого архива Initramfs (POSIX ustar)
+Файлы директории `initramfs_root` упаковываются в блочный архив формата TAR без сжатия:
+```bash
+cd build/initramfs_root
+tar --format=ustar -cf ../iso_root/boot/initramfs.tar *
+```
 
+### 3.5. Сборка гибридного ISO-образа через xorriso и Limine
+Сформированный каталог `iso_root` компонуется в гибридный загрузочный образ:
 ```bash
 xorriso -as mkisofs -b boot/limine-bios-cd.bin \
     -no-emul-boot -boot-load-size 4 -boot-info-table \
     --efi-boot boot/limine-uefi-cd.bin \
     -efi-boot-part --efi-boot-image --protective-msdos-label \
-    iso_root -o build/wunix.iso
-```
+    build/iso_root -o build/wunix.iso
 
-### Развертывание BIOS MBR на образе:
-
-```bash
-limine bios-install build/wunix.iso
+# Развертывание загрузочного сектора Limine для BIOS/MBR:
+tools/limine-bin/limine bios-install build/wunix.iso
 ```
 
 ---
 
-## 4. Запуск в эмуляторе QEMU
+## 4. Конфигурация запуска в эмуляторе QEMU
 
-Запуск сформированного образа выполняется вызовом эмулятора `qemu-system-x86_64`:
+Полная командная строка запуска QEMU со всем аппаратно-виртуальным стеком (VirtIO, сеть, накопители, дисплей):
 
 ```bash
 qemu-system-x86_64 \
@@ -99,25 +134,40 @@ qemu-system-x86_64 \
     -smp 1 \
     -cpu qemu64 \
     -cdrom build/wunix.iso \
-    -serial stdio
+    -boot d \
+    -serial stdio \
+    -device virtio-gpu-pci \
+    -device virtio-net-pci,netdev=net0 \
+    -netdev user,id=net0 \
+    -drive file=build/disk.img,if=none,id=disk0,format=raw \
+    -device virtio-blk-pci,drive=disk0 \
+    -device virtio-tablet-pci
 ```
 
-### Ключевые параметры QEMU:
-
-| Параметр | Назначение |
-|---|---|
-| `-M q35` | Использование современного чипсета Intel Q35 (рекомендуется для PCIe и APIC). |
-| `-m 512M` | Объем выделяемой оперативной памяти (минимум 256M для ядра с кучей). |
-| `-smp <N>` | Количество ядер виртуального процессора. |
-| `-cpu <модель>` | Модель CPU (`qemu64`, `max`, `host`). |
-| `-enable-kvm` | Аппаратная виртуализация KVM (при наличии прав на `/dev/kvm`). |
-| `-serial stdio` | Перенаправление порта COM1 UART в стандартный ввод/вывод терминала. |
-| `-display none` | Отключение графического окна (режим работы исключительно через serial). |
+### Описание аппаратных флагов:
+- `-M q35`: Чипсет Intel Q35 с нативной поддержкой шин PCI Express, ACPI и контроллеров APIC.
+- `-cdrom build/wunix.iso`: Подключение загрузочного носителя Wunix.
+- `-serial stdio`: Перенаправление диагностического порта COM1 UART в терминал хоста.
+- `-device virtio-gpu-pci`: Виртуальный графический акселератор VirtIO GPU.
+- `-netdev user,id=net0 -device virtio-net-pci,netdev=net0`: Сетевой адаптер `virtio-net` с подключением к виртуальному маршрутизатору QEMU SLIRP (`10.0.2.15`).
+- `-drive ... -device virtio-blk-pci`: Блочный диск `virtio-blk` (`/dev/vda`), предоставляющий персистентное хранилище.
 
 ---
 
-## 5. Отладка и вывод последовательного порта (COM1)
+## 5. Методы отладки ядра
 
-Драйвер UART 16550 ([`kernel/src/drivers/serial.rs`](file:///home/valdis/my-os/wunix/kernel/src/drivers/serial.rs)) инициализирует порт COM1 по адресу `0x3F8` со скоростью 115200 бод, 8N1.
+### 5.1. Системные логи COM1 UART
+Все вызовы макроса ядра `serial_println!` и функции `dmesg` выводятся в поток STDOUT хост-терминала. Это гарантирует сохранение сообщений об ошибках даже в случае критического отказа графической подсистемы.
 
-Все сообщения макроса `serial_println!` направляются в COM1, что позволяет просматривать низкоуровневые диагностические сообщения ядра в консоли хоста параллельно с графическим фреймбуфером.
+### 5.2. Отладка через GDB
+Для пошаговой отладки ядра добавьте в параметры запуска QEMU флаги `-s -S`:
+- `-s`: открывает GDB-сервер на TCP-порту `1234`.
+- `-S`: останавливает процессор на первой инструкции BIOS до загрузки ядра.
+
+```bash
+# В отдельном терминале:
+gdb wunix/target/x86_64-unknown-none/debug/wunix-kernel
+(gdb) target remote :1234
+(gdb) break _start
+(gdb) continue
+```

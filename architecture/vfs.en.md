@@ -12,111 +12,105 @@ In traditional hybrid environments (such as WSL or Wine), interoperability is ac
 
 1. **Unified Root (`/`)**: The entire filesystem forms a single directed graph of Inodes starting at `/`.
 2. **Parallel Subsystem Coexistence**:
-   - The standard POSIX hierarchy (`/bin`, `/sbin`, `/etc`, `/dev`, `/home`, `/proc`, `/sys`, `/tmp`, `/var`) serves native UNIX daemons, standard I/O streams, and command-line utilities.
+   - The standard POSIX hierarchy (`/bin`, `/sbin`, `/etc`, `/dev`, `/home`, `/proc`, `/sys`, `/mnt`, `/tmp`, `/var`) serves native UNIX daemons, standard I/O streams, and command-line utilities.
    - The isolated NT subsystem tree (`/win/drives/c/`, `/win/registry/`) provides a native habitat for ported Windows binaries, registry hives, and NT Object Manager semantics.
 3. **Absence of Discrete Drive Letters in the Kernel Core**: Windows drive letters (`C:`, `D:`) are treated as syntactic representations, transparently translated by the VFS into mount points under `/win/drives/<drive>/`.
 
 ```
 / (VFS Root)
 ├── bin/                       # Native Wunix core utilities
-├── dev/                       # Character and block devices (Char/Block Devices)
-├── etc/                       # System configuration files (os-release, hostname)
-│   ├── hostname
-│   └── os-release
+├── dev/                       # Character and block devices (vda, vda1, tty, null, zero)
+├── etc/                       # System configuration files (os-release, hostname, locale)
 ├── home/                      # User home directories
 │   └── user/                  # Current user profile (/home/user)
-│       ├── .wunixrc
-│       └── Documents/
-├── proc/                      # Process and kernel diagnostics pseudo-fs
-├── sys/                       # Device and bus topology
+├── mnt/                       # Persistent disk mount target (FAT32 /dev/vda1)
+├── proc/                      # Process and kernel diagnostics pseudo-fs (uptime, meminfo, mounts)
+├── sys/                       # Device and bus topology (devices/pci)
 ├── tmp/                       # Temporary files directory
 └── win/                       # Windows NT subsystem namespace
     ├── drives/
     │   └── c/                 # Projection of drive C:\
     │       ├── Program Files/
     │       ├── Users/
-    │       │   └── user ────► [Symbolic link pointing to /home/user]
-    │       └── Windows/
-    │           ├── System32/
-    │           └── system.ini
-    └── registry/              # Windows Registry hives (SYSTEM, SOFTWARE)
-        └── SYSTEM.reg
+    │       │   └── user ────► [Symbolic link to /home/user]
+    │       └── Windows/System32/
+    └── registry/              # Windows NT registry hives (SYSTEM, SOFTWARE)
 ```
 
 ---
 
-## 2. Path Translation Engine and Resolution Rules
+## 2. Path Translation and Resolution Rules
 
-All kernel I/O operations (`vfs::open`, `vfs::read_file`, `vfs::write_file`, `vfs::mkdir_p`) accept arbitrary path strings (both POSIX notation and Windows backslash syntax) and route them through the translation engine in [`fs/path.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/path.rs).
+All kernel I/O operations (`vfs::open`, `vfs::read_file`, `vfs::write_file`, `vfs::mkdir_p`) accept arbitrary path string encodings (POSIX or Windows notation) and normalize them via [`fs/path.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/path.rs).
 
 ### 2.1. Translation Algorithm (`translate_path`)
 
 ```mermaid
 flowchart TD
     A["Input Path String"] --> B{"Windows Drive Prefix?<br/>(C:\ or c:/)"}
-    B -- Yes --> C["Prepend /win/drives/&lt;letter&gt;/"]
-    B -- No --> D["Keep Original Path"]
-    C --> E["Normalize Slashes (convert \ to /)"]
+    B -- Yes --> C["Translate prefix to /win/drives/&lt;letter&gt;/"]
+    B -- No --> D["Keep original string"]
+    C --> E["Normalize slashes (\ to /)"]
     D --> E
-    E --> F["Split Path into Segments by '/'"]
-    F --> G["Collapse '.' and Resolve '..' via Stack"]
-    G --> H["Canonical Absolute VFS Path"]
+    E --> F["Split into segments by '/'"]
+    F --> G["Collapse '.' and resolve '..' via stack"]
+    G --> H["Canonical absolute VFS path"]
 ```
 
-1. **Windows Drive Prefix Detection**: If the path starts with an ASCII letter followed by a colon (e.g., `C:` or `c:`), the prefix is translated into `/win/drives/<drive_letter>/`, with the drive letter converted to lowercase.
-2. **Separator Unification**: Backslashes (`\`) are normalized to forward slashes (`/`).
-3. **Relative Path Resolution (`normalize_path`)**:
-   - Empty elements and single dots (`.`) are ignored;
-   - Double dots (`..`) pop the top segment from the path component stack;
-   - Root escape prevention: applying `..` at root retains the `/` root.
+1. **Windows Drive Detection**: Paths starting with a Latin drive letter and a colon (`C:` or `c:`) are converted to `/win/drives/<drive_letter>/`, with the drive letter always mapped to lowercase.
+2. **Slash Normalization**: Backslashes `\` are normalized to standard forward slashes `/`.
+3. **Relative Segment Resolution (`normalize_path`)**:
+   - Redundant slashes and single dot `.` segments are ignored.
+   - `..` transitions pop the top component from the path stack.
+   - Traversals cannot escape the VFS root: invoking `..` at `/` retains `/`.
 
 ### 2.2. Normalization Examples
 
-| Input Path | Canonical VFS Path | Description |
+| Input Path | Canonical VFS Path | Notes |
 |---|---|---|
-| `C:\Windows\System32\drivers` | `/win/drives/c/Windows/System32/drivers` | Drive prefix translation and slash normalization |
-| `c:/windows/../program files` | `/win/drives/c/program files` | Parent directory traversal resolution (`..`) |
-| `C:` | `/win/drives/c` | Drive volume root |
-| `\\server\share\file` | `/server/share/file` | UNC network paths flattened into VFS hierarchy |
-| `/etc/../etc/os-release` | `/etc/os-release` | Native POSIX path normalization |
+| `C:\Windows\System32\drivers` | `/win/drives/c/Windows/System32/drivers` | Drive letter translation and slash conversion |
+| `c:/windows/../program files` | `/win/drives/c/program files` | Segment resolution for `..` |
+| `C:` | `/win/drives/c` | Volume root directory |
+| `\\server\share\file` | `/server/share/file` | Network UNC prefixes mapped to VFS tree |
+| `/etc/../etc/os-release` | `/etc/os-release` | Native POSIX path |
 
 ### 2.3. Case-Insensitive Lookup in the NT Subsystem
 
-UNIX filesystems are strictly case-sensitive, while Win32 and NT Object Manager expect case-insensitive behavior: querying `c:\windows\system32` must reliably match directory `System32`.
+UNIX filesystems are case-sensitive, whereas Win32 and the NT Object Manager require case-insensitivity: opening `c:\windows\system32` must resolve the directory `System32`.
 
-Wunix solves this with granular path routing:
-1. `is_windows_subsystem(path)` checks if the normalized path begins with `/win` or `/win/...`.
-2. When performing `Inode::lookup(name)`:
-   - The directory executes a fast exact match in its `BTreeMap` in $O(\log N)$ time.
-   - If no exact match is found and the directory is flagged `case_insensitive` (or the lookup occurs within `/win`), the kernel iterates over directory entries performing `key.eq_ignore_ascii_case(name)`.
-3. All child directories created inside `/win` automatically inherit `case_insensitive = true`.
+Wunix solves this per-directory without global penalties:
+1. `is_windows_subsystem(path)` flags paths falling into `/win` or `/win/...`.
+2. When calling `Inode::lookup(name)`:
+   - An exact lookup is first performed in `BTreeMap` in $O(\log N)$ time.
+   - If not found, and the directory is marked `case_insensitive` (or resides within `/win`), entries are iterated comparing with `key.eq_ignore_ascii_case(name)`.
+3. Directories created under `/win` automatically inherit `case_insensitive = true`.
 
-### 2.4. Symbolic Link Resolution
+### 2.4. Symbolic Link Traversal
 
-The `resolve_path(path, follow_last_symlink)` routine walks path segments step-by-step:
-- If an intermediate node is a symbolic link (`InodeType::Symlink`), the target string is fetched via `read_link()`.
-- Relative symlinks are prepended with the current parent directory, while absolute symlinks restart traversal from the root.
-- **Loop Prevention**: Traversal depth is bounded to 16 hops (`symlink_depth > 16`). Exceeding this limit returns `VfsError::InvalidPath`.
+`resolve_path(path, follow_last_symlink)` navigates segments iteratively:
+- When encountering an `InodeType::Symlink`, the target is read via `read_link()`.
+- Relative links are appended to the parent directory; absolute links restart traversal from `/`.
+- **Loop Protection**: Symlink chain depth is strictly capped at 16 (`symlink_depth > 16`), returning `VfsError::InvalidPath` on overflow.
 
 ---
 
-## 3. Seamless User Profile Integration (Unified Profile)
+## 3. Unified User Profile
 
-In mixed operating environments, user configurations, documents, and SSH credentials frequently suffer from fragmentation when a "Windows user" and a "Linux user" reside in disparate folder structures.
+A chronic issue in hybrid operating systems is data fragmentation between independent user accounts.
 
-Wunix enforces a **single user profile** paradigm at the VFS level:
-- The authoritative physical storage location for user files is `/home/user`.
-- During VFS initialization, the kernel constructs `/win/drives/c/Users` and creates a symbolic link:
+Wunix solves this by establishing a **single unified user profile**:
+- The canonical storage directory is `/home/user`.
+- During VFS boot initialization, the kernel constructs `/win/drives/c/Users` and links:
   ```
   /win/drives/c/Users/user  ───(Symlink)───►  /home/user
   ```
-- Any Win32 application writing to `C:\Users\user\Documents` transparently targets `/home/user/Documents`. POSIX shells and daemons access the same files without path translations or background network synchronizers.
+- Any Win32 application reading `C:\Users\user\Documents` seamlessly accesses `/home/user/Documents`. POSIX utilities interact with identical files without path conversions.
 
 ---
 
 ## 4. VFS Type Hierarchy and Abstractions
 
-The Wunix VFS is built on Rust traits located in [`fs/vfs.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/vfs.rs). The core kernel interacts solely with trait objects, decoupling storage layout from file operations.
+VFS traits reside in [`fs/vfs.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/vfs.rs):
 
 ```mermaid
 classDiagram
@@ -139,23 +133,19 @@ classDiagram
         -root: Arc~RamInode~
         +new() RamFs
     }
-    class RamInode {
-        -inode_id: u64
-        -itype: InodeType
-        -permissions: u16
-        -data: RamNodeData
-        +new_file() RamInode
-        +new_dir(case_insensitive) RamInode
-        +new_symlink(target) RamInode
+    class Fat32Fs {
+        -inner: Arc~Fat32Inner~
+        +open(dev) Result~Fat32Fs, VfsError~
     }
     FileSystem <|.. RamFs : implements
+    FileSystem <|.. Fat32Fs : implements
     Inode <|.. RamInode : implements
-    RamFs --> RamInode : contains root
+    Inode <|.. FatInode : implements
 ```
 
 ### 4.1. The `Inode` Trait
 
-Every node in the VFS hierarchy (regular files, directories, symbolic links, character devices, block devices) implements `Inode`:
+All VFS objects (files, directories, symlinks, character/block devices) implement `Inode`:
 
 ```rust
 pub trait Inode: Send + Sync {
@@ -169,134 +159,109 @@ pub trait Inode: Send + Sync {
 }
 ```
 
-- Bound by `Send + Sync`, Inodes can be shared across multiple kernel threads and exception handlers.
-- Safe default trait methods return `Err(VfsError::NotADirectory)` or `Err(VfsError::NotSupported)`, avoiding boilerplate stub implementations across specialized file node types.
+- Requiring `Send + Sync` ensures thread-safe sharing across kernel threads and interrupt handlers.
+- Safe default implementations return `Err(VfsError::NotADirectory)` or `Err(VfsError::NotSupported)`.
 
-### 4.2. Metadata and Errors
+### 4.2. Metadata and Error Model
 
-- `InodeType`: Strongly typed node discriminator (`File`, `Directory`, `Symlink`, `CharDevice`, `BlockDevice`).
-- `Metadata`: Node properties including type, byte size, unique `inode_id`, and octal `permissions`.
-- `DirEntry`: Directory listing item returned by `readdir()` (`name`, `inode_id`, `itype`).
+- `InodeType`: Typed enumeration of filesystem node categories (`File`, `Directory`, `Symlink`, `CharDevice`, `BlockDevice`).
+- `Metadata`: Node properties (type, size in bytes, unique `inode_id`, POSIX octal `permissions`).
+- `DirEntry`: Directory listing entry (`name`, `inode_id`, `itype`).
 - `VfsError`: Exhaustive enumeration of filesystem errors:
-  - `NotFound`: Node not present;
-  - `IsADirectory` / `NotADirectory`: Node type mismatch for requested operation;
-  - `PermissionDenied`: Access disallowed by permission mask;
-  - `AlreadyExists`: Attempted creation of an existing filename;
-  - `InvalidPath`: Malformed path syntax or symlink recursion exceeded;
-  - `IoError`: Device I/O failure or allocation error;
-  - `NotSupported`: Operation unsupported by filesystem driver.
+  - `NotFound`, `IsADirectory`, `NotADirectory`, `PermissionDenied`, `AlreadyExists`, `InvalidPath`, `IoError`, `NotSupported`.
 
 ---
 
-## 5. In-Memory Filesystem (RamFS) Internals
+## 5. File Descriptors and the `FileHandle` Trait
 
-The [`fs/ramfs.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/ramfs.rs) module provides an in-memory filesystem stored in the dynamic kernel heap. RamFS serves as the initial root filesystem (`/`) during early hardware bring-up before disk block devices are mounted.
-
-### 5.1. Thread-Safe `RamInode` Structure
-
-To eliminate coarse-grained filesystem locks, concurrency controls reside inside each individual node:
+In line with the UNIX "Everything is a file" model, [`fs/handle.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/handle.rs) and [`fs/fd.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/fd.rs) provide a uniform open resource abstraction:
 
 ```rust
-pub enum RamNodeData {
-    File(RwLock<Vec<u8>>),
-    Directory {
-        children: RwLock<BTreeMap<String, Arc<dyn Inode>>>,
-        case_insensitive: RwLock<bool>,
-    },
-    Symlink(RwLock<String>),
-}
-
-pub struct RamInode {
-    inode_id: u64,
-    itype: InodeType,
-    permissions: u16,
-    data: RamNodeData,
+pub trait FileHandle: Send + Sync {
+    fn read(&self, buf: &mut [u8]) -> Result<usize, i64>;
+    fn write(&self, buf: &[u8]) -> Result<usize, i64>;
+    fn poll_events(&self) -> u32;
+    fn get_flags(&self) -> u32;
+    fn set_flags(&self, flags: u32);
+    fn close(&self);
+    fn as_inode(&self) -> Option<Arc<dyn Inode>>;
+    fn offset(&self) -> usize;
+    fn set_offset(&self, offset: usize);
+    fn epoll_ctl(&self, op: u32, fd: u64, event_ptr: u64) -> Result<u64, i64>;
 }
 ```
 
-1. **Regular Files (`File`)**: Payloads are stored inside a dynamic byte vector `Vec<u8>` wrapped by a `spin::RwLock`. Concurrent reads (`read_at`) proceed in parallel; writes (`write_at`) acquire an exclusive lock and automatically grow the backing storage (`data.resize(end, 0)`) when writing past the current file length.
-2. **Directories (`Directory`)**: Child references are held in an ordered `BTreeMap<String, Arc<dyn Inode>>`. Storing child nodes as `Arc<dyn Inode>` allows mounting foreign filesystem implementations (such as Ext2, FAT32, or ProcFS) seamlessly into the RamFS tree.
-3. **Identifier Generation**: The `inode_id` attribute is assigned via an atomic global counter `static NEXT_INODE_ID: AtomicU64` with `fetch_add(1, Ordering::Relaxed)`.
+### Implementations of `FileHandle`:
+1. **`InodeHandle`**: Files and directories with tracking of read/write `offset`.
+2. **`StdinHandle` / `StdoutHandle`**: Standard I/O handles connecting keyboard scan codes to terminal framebuffer output with ANSI parser and COM1 serial mirroring.
+3. **`PipeHandle`**: IPC unidirectional circular ring buffers powering shell pipelines (`cmd1 | cmd2`).
+4. **`SocketHandle`**: TCP/UDP/ICMP network sockets bridging `read`/`write` directly to `smoltcp`.
+5. **`EventFdHandle`**: Inter-thread 64-bit event counters.
+6. **`EpollHandle`**: Asynchronous I/O event readiness multiplexers.
 
 ---
 
-## 6. Initramfs Extraction and Limine Integration
+## 6. Block Storage Layer and FAT32 Driver
 
-To allow Wunix to boot into a functional userland without requiring AHCI or NVMe storage drivers, essential configuration and binaries are bundled into an in-memory `initramfs.tar` archive delivered by the **Limine** bootloader.
+For persistent storage on real drives and virtual block images, Wunix implements a complete block stack:
 
-### 6.1. The POSIX ustar Specification
+### 6.1. Block Devices and MBR Partitions (`fs/block.rs`)
+- The `BlockDevice` trait provides synchronous 512-byte sector operations (`read_sectors`, `write_sectors`).
+- When a block storage controller (`virtio-blk`) is detected on the PCI bus, device `/dev/vda` is registered.
+- Sector 0 is parsed for Master Boot Record (MBR) partition tables, automatically creating partition devices such as `/dev/vda1`.
 
-The archive unpacker in [`fs/tar.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/tar.rs) conforms to the **POSIX IEEE P1003.1 ustar** archive standard. The archive is composed of consecutive 512-byte blocks:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    512-byte TAR Header                      │
-├───────────────┬──────────────┬───────────────┬──────────────┤
-│ 0..100: name  │ 100..108:mode│ 108..116: uid │ 116..124: gid│
-├───────────────┴──────────────┼───────────────┴──────────────┤
-│ 124..136: size (octal ASCII) │ 136..148: mtime (timestamp)  │
-├──────────────────────────────┼───────────────┬──────────────┤
-│ 148..156: chksum             │ 156: typeflag │157..257: link│
-├──────────────────────────────┴───────────────┴──────────────┤
-│ 257..263: magic ("ustar\0")  │ 345..500: prefix (path)      │
-└──────────────────────────────┴──────────────────────────────┘
-│             Payload Data Blocks: ceil(size / 512)           │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **File Size (`size`)**: Parsed by `parse_octal` from an octal ASCII string representation;
-- **Record Discriminator (`typeflag`)**:
-  - `b'0'` or `0`: Regular file;
-  - `b'2'`: Symbolic link (target stored in `linkname`);
-  - `b'5'`: Directory.
-- **Archive Terminator**: Two consecutive zero-filled 512-byte blocks (1024 zero bytes).
-
-### 6.2. Limine Boot Protocol Integration
-
-1. The build harness [`tools/run.sh`](file:///home/valdis/my-os/wunix/tools/run.sh) prepares configuration templates (`/etc/os-release`, `/etc/hostname`, `/win/drives/c/Windows/system.ini`, `/win/registry/SYSTEM.reg`), bundles them via `tar --format=ustar -cf initramfs.tar ...`, and registers them in `limine.conf`:
-   ```ini
-   module_path: boot():/boot/initramfs.tar
-   ```
-2. The kernel queries loaded modules via a static `ModuleRequest`:
-   ```rust
-   #[used]
-   #[link_section = ".requests"]
-   static MODULE_REQUEST: limine::request::ModuleRequest = limine::request::ModuleRequest::new();
-   ```
-3. The kernel entry point (`main.rs`) accesses the raw slice `first_module.data()` and passes it to `fs::init(Some(bytes))`.
-4. `tar::unpack_tar` extracts files and directories directly into the mounted `RamFs` root, automatically creating any missing intermediate paths (`ensure_dir_path`).
+### 6.2. FAT32 Filesystem Driver (`fs/fat.rs`)
+- **BPB Parsing**: Reads BIOS Parameter Block parameters from partition sector 0: bytes per sector, sectors per cluster, reserved sectors, number of FAT copies, and root directory cluster.
+- **Cluster Chains**: Files are retrieved by traversing FAT32 entries until the end-of-chain marker `FAT32_EOC` (`0x0FFF_FFFF`).
+- **Sector Caching**: Directory and FAT sectors are cached in memory to minimize storage bus latency.
+- **Long File Name (LFN) Support**: Handles standard 8.3 short names and UTF-16 LFN directory records.
 
 ---
 
-## 7. Storage Subsystem Roadmap
+## 7. Dynamic Mount Management (`fs/mount.rs`)
 
-Wunix filesystem development proceeds across four distinct phases:
+The kernel maintains an in-memory mount table:
+- `sys_mount(source, target, fstype, flags, data)` mounts a block filesystem onto any VFS path.
+  - Example: Mounting `/dev/vda1` (FAT32) to `/mnt`.
+- `sys_umount2(target, flags)` unmounts filesystems cleanly and flushes dirty metadata.
+- Active mount points are exported to `/proc/mounts`.
 
-```mermaid
-flowchart LR
-    E1["Phase 1: VFS Core<br/>(RamFS, Initramfs, C:\)"] --> E2["Phase 2: FAT32<br/>(Drive C:\, EFI, AHCI/NVMe)"]
-    E2 --> E3["Phase 3: EXT2/EXT4<br/>(Native POSIX Root)"]
-    E3 --> E4["Phase 4: Synthetic FS<br/>(DevFS, ProcFS, SysFS)"]
-```
+---
 
-### Phase 1: Core Foundation (Current Milestone)
-- [x] Defined `Inode`, `FileSystem`, `Metadata`, and `DirEntry` abstractions;
-- [x] Implemented in-memory `RamFs` with thread-safe `RamInode` containers;
-- [x] Implemented path engine: `C:\` -> `/win/drives/c/`, `.` and `..` canonicalization;
-- [x] Implemented symbolic links and unified user profile (`C:\Users\user` -> `/home/user`);
-- [x] Implemented POSIX ustar initramfs unpacker over Limine `ModuleRequest`.
+## 8. Diagnostic Pseudo-Filesystems: ProcFS & SysFS
 
-### Phase 2: FAT32 Driver and Persistent Block Storage
-- Implement block layer abstractions: `BlockDevice` trait with an integrated Sector Buffer Cache;
-- Develop FAT32 driver: parse BPB/EBPB boot records, FAT1/FAT2 allocation tables, cluster chains, and Long File Names (LFN);
-- Mount persistent drive `C:\` from a physical FAT32 partition and attach `/boot/efi`.
+Module [`fs/procfs.rs`](file:///home/valdis/my-os/wunix/kernel/src/fs/procfs.rs) generates synthetic text files on demand:
 
-### Phase 3: Native EXT2 / EXT4 Support
-- Implement EXT2/EXT4 filesystem driver for persistent POSIX storage;
-- Support block groups, Inode allocation tables, bitmap allocators, indirect blocks, and extents;
-- Enforce standard POSIX permission bits (`chown`, `chmod`) and Access Control Lists (ACLs).
+| Pseudo-file Path | Content Provided | Consumers |
+|---|---|---|
+| `/proc/uptime` | System uptime in seconds and milliseconds | `top`, `wsh`, `date` |
+| `/proc/meminfo` | Total, free, and used memory statistics | `free`, `top` |
+| `/proc/cpuinfo` | CPUID model, core count, instruction flags | `lshw`, `uname` |
+| `/proc/version` | Kernel version and build timestamp | `uname`, `dmesg` |
+| `/proc/mounts` | Active filesystem mount points table | `mount`, `df`, `lsblk` |
+| `/proc/net/dev` | Network interface TX/RX packet statistics | `ip`, `ss` |
+| `/sys/devices/pci` | Enumerated PCI devices and drivers | `lspci`, `lshw` |
 
-### Phase 4: Synthetic Pseudo-Filesystems (DevFS, ProcFS, SysFS)
-- **DevFS (`/dev`)**: Dynamic registration of character devices (`/dev/console`, `/dev/serial0`, `/dev/null`) and block storage devices (`/dev/sda`);
-- **ProcFS (`/proc`)**: Kernel introspection and scheduler statistics exported as virtual text files (`/proc/cpuinfo`, `/proc/meminfo`, `/proc/<pid>/status`);
-- **SysFS (`/sys`)**: Hardware device trees, PCI bus hierarchies, and active kernel driver configurations.
+---
+
+## 9. Windows NT Virtual Registry (`fs/registry/`)
+
+Compatibility with ported Windows applications and NT system parameters is supported via `/win/registry/`:
+
+- **Registry Hives**:
+  - `HKEY_LOCAL_MACHINE\SYSTEM` $\to$ `/win/registry/SYSTEM`
+  - `HKEY_LOCAL_MACHINE\SOFTWARE` $\to$ `/win/registry/SOFTWARE`
+- **Value Types**:
+  - `REG_SZ`: String values (versions, driver names, system paths).
+  - `REG_DWORD`: 32-bit integer values (timeouts, operational flags).
+  - `REG_BINARY`: Binary configuration blobs.
+- Manipulated via Windows NT syscalls (`NtOpenKey`, `NtCreateKey`, `NtQueryValueKey`) and the `reg` CLI utility.
+
+---
+
+## 10. Storage Subsystem Roadmap
+
+1. **Stage 1 (Completed)**: Core VFS traits (`Inode`, `FileSystem`), in-memory RamFS, Windows path translation, POSIX ustar initramfs parser, and root mount.
+2. **Stage 2 (Completed)**: Block storage layer `BlockDevice` (`/dev/vda`), MBR partition parser (`/dev/vda1`), **FAT32** filesystem driver with sector caching, dynamic `mount`/`umount2` system calls, ProcFS/SysFS synthetic filesystems, and the Windows NT registry.
+3. **Stage 3 (In Development)**: **EXT2/EXT4** filesystem driver for persistent Linux root partitions.
+4. **Stage 4 (Planned)**: Unified Page Cache with asynchronous write-back and disk sync.
