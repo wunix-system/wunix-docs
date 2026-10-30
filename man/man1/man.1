@@ -1,0 +1,77 @@
+.TH MAN 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+man \- an interface to the system reference manuals
+.SH SYNOPSIS
+\fBman\fR [\fIOPTION\fR...] [\fISECTION\fR] \fIPAGE\fR...
+.br
+\fBman\fR \fB\-k\fR \fIKEYWORD\fR...
+.br
+\fBman\fR \fB\-f\fR \fIPAGE\fR...
+.SH DESCRIPTION
+\fBman\fR is the system's manual pager. Each \fIPAGE\fR argument given to \fBman\fR is normally the name of a program, utility or function. The manual page associated with each of these arguments is then found and displayed. A \fISECTION\fR, if provided, will direct \fBman\fR to look only in that section of the manual.
+.SH SECTIONS
+The standard sections of the manual include:
+.TP
+\fB1\fR
+Executable programs or shell commands
+.TP
+\fB2\fR
+System calls (functions provided by the kernel)
+.TP
+\fB3\fR
+Library calls (functions within program libraries)
+.TP
+\fB4\fR
+Special files (usually found in /dev)
+.TP
+\fB5\fR
+File formats and conventions, e.g. /etc/passwd
+.TP
+\fB6\fR
+Games
+.TP
+\fB7\fR
+Miscellaneous (including macro packages and conventions)
+.TP
+\fB8\fR
+System administration commands (usually only for root)
+.SH OPTIONS
+.TP
+\fB\-s\fR \fISECTION\fR, \fB\-\-section\fR=\fISECTION\fR
+Look only in the specified section of the manual.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Display all matching manual pages found across all sections.
+.TP
+\fB\-k\fR, \fB\-\-apropos\fR
+Search the short descriptions and manual page names for keywords.
+.TP
+\fB\-f\fR, \fB\-\-whatis\fR
+Display short one-line description of the specified manual pages.
+.TP
+\fB\-w\fR, \fB\-\-where\fR, \fB\-\-path\fR
+Print the physical location of the manual page files, or MANPATH search directories.
+.TP
+\fB\-7\fR, \fB\-\-ascii\fR
+Output plain 7-bit ASCII text without ANSI escape sequences.
+.TP
+\fB\-\-no-pager\fR
+Do not pipe output to the interactive pager; write directly to stdout.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display a short help message and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+Successful program execution.
+.TP
+\fB1\fR
+Usage, syntax or configuration file error.
+.TP
+\fB16\fR
+Nothing was found for the specified manual page.
+.SH "SEE ALSO"
+\fBwsh\fR(1), \fBless\fR(1), \fBcat\fR(1)
