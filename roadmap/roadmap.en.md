@@ -150,22 +150,25 @@ This document tracks the milestones of the Wunix kernel and base system, current
   - [x] Asynchronous I/O: epoll reactor (`SYS_EPOLL_CREATE1`, `SYS_EPOLL_CTL`, `SYS_EPOLL_WAIT`), ring buffer pipes (`SYS_PIPE2`), `eventfd2`, `SYS_FCNTL` (O_NONBLOCK).
   - [x] System V ABI stack with Auxiliary Vectors (`auxv`), `envp` and 16-byte alignment.
   - [x] Complete runtime syscall verification: successfully passed comprehensive tests for concurrency/channels, allocator/GC, and async I/O/timers.
-- [ ] Kernel network stack in Rust (`smoltcp`) and BSD socket interface:
-  - [ ] Packet processing for `virtio-net` driver integrated with `smoltcp` (in-kernel Ethernet frame handling, ring RX/TX buffers).
-  - [ ] Linux socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49), `SYS_LISTEN` (50), `SYS_ACCEPT` (43).
-  - [ ] Protocol support: ARP, IPv4, ICMP (Echo Request/Reply for ping), UDP (DNS resolution), and TCP (reliable stream connection).
-- [ ] Network utility suite in base image (Userland in Rust):
-  - [ ] `ping` utility: ICMP Echo requests and RTT latency measurement.
-  - [ ] `curl` / `wget` utility: HTTP GET requests and file downloads.
-  - [ ] `ip` utility: interface inspection, IP address and default gateway route assignment.
-  - [ ] `ss` / `netstat` utility: active socket and connection monitoring.
-- [ ] Storage utilities and filesystem support:
-  - [ ] Integration of `virtio-blk` driver with kernel device subsystem (`/dev/vda`).
-  - [ ] `lsblk` utility: block device enumeration.
-  - [ ] `fdisk` utility: MBR / GPT partition table editing on persistent disk.
-  - [ ] Persistent filesystem support (FAT32 / ext2) and syscalls `SYS_MOUNT` (165), `SYS_UMOUNT2` (166).
-  - [ ] `mount` and `umount` utilities: mounting partition filesystems into VFS (`/mnt/...`).
-  - [ ] Persistence verification: saving user files to QCOW2 virtual disk across QEMU reboots.
+- [x] Kernel network stack in Rust (`smoltcp`) and BSD socket interface:
+  - [x] Packet processing for `virtio-net` driver integrated with `smoltcp` (in-kernel Ethernet frame handling, ring RX/TX buffers).
+  - [x] Linux socket syscalls: `SYS_SOCKET` (41), `SYS_CONNECT` (42), `SYS_SENDTO` (44), `SYS_RECVFROM` (45), `SYS_BIND` (49), `SYS_LISTEN` (50), `SYS_ACCEPT` (43).
+  - [x] Protocol support: ARP, IPv4, ICMP (Echo Request/Reply for ping), UDP (DNS resolution), and TCP (reliable stream connection).
+- [x] Network utility suite in base image (Userland in Rust):
+  - [x] `ping` utility: ICMP Echo requests and RTT latency measurement.
+  - [x] `curl` / `wget` utility: HTTP GET requests and file downloads.
+  - [x] `ip` utility: interface inspection, IP address and default gateway route assignment.
+  - [x] `ss` / `netstat` utility: active socket and connection monitoring.
+- [x] Storage utilities and filesystem support:
+  - [x] Integration of `virtio-blk` driver with kernel device subsystem (`/dev/vda`).
+  - [x] `lsblk` utility: block device enumeration.
+  - [x] `fdisk` utility: MBR / GPT partition table editing on persistent disk.
+  - [x] Persistent filesystem support (FAT32 / ext2) and syscalls `SYS_MOUNT` (165), `SYS_UMOUNT2` (166).
+  - [x] `mount` and `umount` utilities: mounting partition filesystems into VFS (`/mnt/...`).
+  - [x] Persistence verification: saving user files to QCOW2 virtual disk across QEMU reboots.
+- [x] Hardware diagnostics and man page utilities:
+  - [x] Utilities `lspci`, `lshw`, `lsdev`, `lsmod`, `modinfo`, `hwclock`, `fbset`.
+  - [x] `man` utility with offline documentation manual pages (`/usr/share/man/ru/man1/`, `/usr/share/man/en/man1/`).
 
 ### Phase 10: Users & Access Control (Multi-User & Security)
 - [ ] Process and user identity model:
