@@ -1,0 +1,19 @@
+.TH LN 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+ln \- make links between files
+.SH SYNOPSIS
+\fBln\fR [\fIOPTION\fR]... \fITARGET\fR [\fILINK_NAME\fR]
+.SH DESCRIPTION
+\fBln\fR creates links to files. With \fB\-s\fR, it creates a symbolic link pointing to TARGET.
+.SH OPTIONS
+.TP
+\fB\-s\fR, \fB\-\-symbolic\fR
+Make symbolic links instead of hard links.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Remove existing destination files.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBreadlink\fR(1), \fBls\fR(1)

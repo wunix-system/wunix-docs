@@ -1,0 +1,16 @@
+.TH RMDIR 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+rmdir \- remove empty directories
+.SH SYNOPSIS
+\fBrmdir\fR [\fIOPTION\fR]... \fIDIRECTORY\fR...
+.SH DESCRIPTION
+\fBrmdir\fR removes each DIRECTORY, if it is empty.
+.SH OPTIONS
+.TP
+\fB\-p\fR, \fB\-\-parents\fR
+Remove DIRECTORY and its ancestors; e.g., 'rmdir -p a/b' is similar to 'rmdir a/b a'.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBmkdir\fR(1), \fBrm\fR(1)
