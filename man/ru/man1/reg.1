@@ -12,6 +12,12 @@ reg \- консольная утилита для работы с реестро
 .TP
 \fBadd\fR \fIКЛЮЧ\fR \fB/v\fR \fIИМЯ\fR \fB/t\fR \fIТИП\fR \fB/d\fR \fIДАННЫЕ\fR
 Добавляет новый параметр или перезаписывает существующее значение. Поддерживаемые типы: REG_SZ, REG_DWORD.
+.TP
+\fBimport\fR \fIФАЙЛ.REG\fR
+Импортирует разделы и параметры из текстового файла реестра формата Windows Registry Editor Version 5.00.
+.TP
+\fBexport\fR \fIКЛЮЧ\fR [\fIФАЙЛ.REG\fR]
+Экспортирует ветку реестра в стандартный формат .reg.
 .SH ПРИМЕРЫ
 .TP
 reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"

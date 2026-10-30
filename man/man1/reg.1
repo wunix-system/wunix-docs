@@ -12,6 +12,12 @@ Display key values or a specific value.
 .TP
 \fBadd\fR \fIKEY\fR \fB/v\fR \fIVALUE\fR \fB/t\fR \fITYPE\fR \fB/d\fR \fIDATA\fR
 Add a new value or overwrite an existing value. Supported types: REG_SZ, REG_DWORD.
+.TP
+\fBimport\fR \fIFILENAME.REG\fR
+Import keys and values from a Windows Registry Editor Version 5.00 text file.
+.TP
+\fBexport\fR \fIKEY\fR [\fIFILENAME.REG\fR]
+Export a registry branch to .reg format.
 .SH EXAMPLES
 .TP
 reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"
