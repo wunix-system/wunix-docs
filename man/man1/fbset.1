@@ -1,0 +1,28 @@
+.TH FBSET 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+fbset \- show and modify frame buffer device settings
+.SH SYNOPSIS
+\fBfbset\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBfbset\fR is a system utility to show or change the settings of the frame buffer device (resolution, depth, pitch, and pixel format).
+.SH OPTIONS
+.TP
+\fB\-i\fR, \fB\-\-info\fR
+Display detailed information about the frame buffer device.
+.TP
+\fB\-x\fR \fIwidth\fR
+Set the horizontal resolution.
+.TP
+\fB\-y\fR \fIheight\fR
+Set the vertical resolution.
+.TP
+\fB\-depth\fR \fIbits\fR
+Set color depth (16, 24, 32).
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information.
+.SH "SEE ALSO"
+\fBlshw\fR(1)

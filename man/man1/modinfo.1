@@ -1,0 +1,34 @@
+.TH MODINFO 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+modinfo \- show information about a kernel driver or module
+.SH SYNOPSIS
+\fBmodinfo\fR [\fIOPTIONS\fR] \fImodule_name\fR
+.SH DESCRIPTION
+\fBmodinfo\fR extracts and displays detailed information about a kernel device driver, including its author, description, license, supported hardware aliases, and module parameters.
+.SH OPTIONS
+.TP
+\fB\-F\fR \fIfield\fR
+Only print the value of the specified field.
+.TP
+\fB\-d\fR, \fB\-\-description\fR
+Print only the module description.
+.TP
+\fB\-a\fR, \fB\-\-author\fR
+Print only the module author.
+.TP
+\fB\-l\fR, \fB\-\-license\fR
+Print only the module license.
+.TP
+\fB\-n\fR, \fB\-\-filename\fR
+Print only the module source filename.
+.TP
+\fB\-p\fR, \fB\-\-parameters\fR
+Print only module configuration parameters.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information.
+.SH "SEE ALSO"
+\fBlsmod\fR(1)

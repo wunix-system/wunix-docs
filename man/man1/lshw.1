@@ -1,0 +1,25 @@
+.TH LSHW 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+lshw \- list hardware configuration
+.SH SYNOPSIS
+\fBlshw\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBlshw\fR is a comprehensive tool providing detailed information on the hardware configuration of the machine.
+.SH OPTIONS
+.TP
+\fB\-short\fR
+Output hardware paths in a compact table.
+.TP
+\fB\-class\fR \fIclass\fR
+Only show the given class of hardware (cpu, memory, disk, network, display, bus).
+.TP
+\fB\-json\fR
+Output hardware tree as a JSON structure.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information.
+.SH "SEE ALSO"
+\fBlspci\fR(1), \fBlsdev\fR(1)

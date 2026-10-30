@@ -1,0 +1,19 @@
+.TH LSMOD 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+lsmod \- show the status of modules in the kernel
+.SH SYNOPSIS
+\fBlsmod\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBlsmod\fR is a trivial program which nicely formats the contents of the \fI/proc/modules\fR file, showing which kernel drivers and modules are currently loaded.
+.SH OPTIONS
+.TP
+\fB\-s\fR, \fB\-\-sort\fR
+Sort modules by size in descending order.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information.
+.SH "SEE ALSO"
+\fBmodinfo\fR(1), \fBlsdev\fR(1)

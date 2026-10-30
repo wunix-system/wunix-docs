@@ -1,0 +1,31 @@
+.TH LSPCI 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+lspci \- list all PCI devices
+.SH SYNOPSIS
+\fBlspci\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBlspci\fR is a utility for displaying information about PCI buses in the system and devices connected to them.
+.SH OPTIONS
+.TP
+\fB\-n\fR
+Show numeric vendor and device IDs (vendor:device).
+.TP
+\fB\-v\fR
+Be verbose and display detailed information about BAR addresses, sizes, and IRQ lines.
+.TP
+\fB\-vv\fR
+Be very verbose and display active kernel drivers in use.
+.TP
+\fB\-t\fR
+Show a tree-like diagram containing all buses, bridges, devices and connections between them.
+.TP
+\fB\-s\fR [[\fIbus\fR]:]\fIslot\fR[.\fIfunc\fR]
+Show only devices in the specified bus and slot.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information.
+.SH "SEE ALSO"
+\fBlshw\fR(1), \fBlsdev\fR(1)

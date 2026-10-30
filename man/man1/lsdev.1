@@ -1,0 +1,28 @@
+.TH LSDEV 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+lsdev \- display hardware devices, drivers and resources
+.SH SYNOPSIS
+\fBlsdev\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBlsdev\fR displays system hardware devices, associated kernel device drivers, assigned interrupts (IRQs), I/O port spaces, and MMIO memory regions.
+.SH OPTIONS
+.TP
+\fB\-\-irq\fR
+Show only interrupt requests (IRQ).
+.TP
+\fB\-\-io\fR
+Show only I/O port reservations.
+.TP
+\fB\-\-mmio\fR
+Show only memory mapped I/O (MMIO) ranges.
+.TP
+\fB\-\-drivers\fR
+Show only device-to-driver bindings.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information.
+.SH "SEE ALSO"
+\fBlspci\fR(1), \fBlshw\fR(1), \fBlsmod\fR(1)
