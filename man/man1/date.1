@@ -1,0 +1,50 @@
+.TH DATE 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+date \- print or set the system date and time
+.SH SYNOPSIS
+\fBdate\fR [\fIOPTION\fR]... [+\fIFORMAT\fR]
+.br
+\fBdate\fR [\fIOPTION\fR]... [\fIMMDDhhmm\fR[[\fICC\fR]\fIYY\fR][.\fIss\fR]]
+.SH DESCRIPTION
+Display date and time in the given \fIFORMAT\fR, or set the system date and time.
+.SH OPTIONS
+.TP
+\fB\-d\fR, \fB\-\-date\fR=\fISTRING\fR
+Display time described by \fISTRING\fR, not 'now'. Supports seconds since epoch (@1793354423), ISO 8601 timestamps (YYYY-MM-DD HH:MM:SS), and time-only specs.
+.TP
+\fB\-s\fR, \fB\-\-set\fR=\fISTRING\fR
+Set time described by \fISTRING\fR. Requires root privileges.
+.TP
+\fB\-u\fR, \fB\-\-utc\fR, \fB\-\-universal\fR
+Print or set Coordinated Universal Time (UTC).
+.TP
+\fB\-R\fR, \fB\-\-rfc\-email\fR
+Output date and time in RFC 5322 format (e.g., "Fri, 30 Oct 2026 13:00:23 +0300").
+.TP
+\fB\-I\fR[\fIFMT\fR], \fB\-\-iso\-8601\fR[=\fIFMT\fR]
+Output date/time in ISO 8601 format. \fIFMT\fR may be 'date' (default), 'hours', 'minutes', 'seconds', or 'ns'.
+.TP
+\fB\-r\fR, \fB\-\-reference\fR=\fIFILE\fR
+Display the last modification time of \fIFILE\fR.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Output version information and exit.
+.SH FORMAT
+Controls the output. Common sequences:
+.TP
+\fB%Y\fR year, \fB%m\fR month (01..12), \fB%d\fR day of month (01..31)
+.TP
+\fB%H\fR hour (00..23), \fB%M\fR minute (00..59), \fB%S\fR second (00..59)
+.TP
+\fB%F\fR full date (same as %Y-%m-%d), \fB%T\fR time (same as %H:%M:%S)
+.TP
+\fB%s\fR seconds since 1970-01-01 00:00:00 UTC
+.TP
+\fB%Z\fR alphabetic time zone abbreviation (e.g. MSK, UTC)
+.TP
+\fB%z\fR numeric time zone (e.g. +0300)
+.SH "SEE ALSO"
+\fBhwclock\fR(1), \fBtimedatectl\fR(1), \fBtime\fR(1)

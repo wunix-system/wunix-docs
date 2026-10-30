@@ -1,0 +1,33 @@
+.TH TIME 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+time \- time a simple command or give resource usage
+.SH SYNOPSIS
+\fBtime\fR [\fIOPTIONS\fR]... \fICOMMAND\fR [\fIARGS\fR]...
+.SH DESCRIPTION
+The \fBtime\fR command runs the specified \fICOMMAND\fR with the given \fIARGS\fR. When \fICOMMAND\fR finishes, \fBtime\fR writes a message to standard error reporting the elapsed real time and CPU resource usage.
+.SH OPTIONS
+.TP
+\fB\-p\fR, \fB\-\-portability\fR
+Use the POSIX standard format: real %e\\nuser %U\\nsys %S.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print a detailed summary of system resource usage and wall clock execution time.
+.TP
+\fB\-o\fR \fIFILE\fR, \fB\-\-output\fR=\fIFILE\fR
+Do not send the results to stderr, but overwrite the specified file.
+.TP
+\fB\-a\fR, \fB\-\-append\fR
+Append the resource usage information to the output file instead of overwriting it (used with \-o).
+.TP
+\fB\-f\fR \fIFORMAT\fR, \fB\-\-format\fR=\fIFORMAT\fR
+Specify output format (%E elapsed time, %e seconds, %x exit status, %C command name).
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a summary of the command-line options and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print the version number of time and exit.
+.SH "EXIT STATUS"
+The exit status of \fBtime\fR is the exit status of the executed command. If the command was terminated by a signal or failed to execute, standard error codes are returned.
+.SH "SEE ALSO"
+\fBdate\fR(1), \fBtop\fR(1)

@@ -1,0 +1,44 @@
+.TH TIMEDATECTL 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+timedatectl \- control the system time and date
+.SH SYNOPSIS
+\fBtimedatectl\fR [\fIOPTIONS\fR]... [\fICOMMAND\fR]
+.SH DESCRIPTION
+\fBtimedatectl\fR may be used to query and change the system clock and its settings, and control the hardware clock RTC.
+.SH COMMANDS
+.TP
+\fBstatus\fR
+Show current settings of the system clock and RTC (default).
+.TP
+\fBshow\fR
+Show properties in machine-readable KEY=VALUE format.
+.TP
+\fBset\-time\fR \fITIME\fR
+Set the system clock to the specified time ('YYYY-MM-DD HH:MM:SS').
+.TP
+\fBset\-timezone\fR \fITIMEZONE\fR
+Set the system time zone to the specified value (persisted in /etc/timezone).
+.TP
+\fBlist\-timezones\fR
+List available time zones.
+.TP
+\fBset\-local\-rtc\fR [\fIBOOL\fR]
+Control whether the RTC is in local time or UTC.
+.TP
+\fBset\-ntp\fR [\fIBOOL\fR]
+Control whether network time synchronization is enabled.
+.TP
+\fBtimesync\-status\fR
+Show status of the time synchronization service.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a short help text and exit.
+.TP
+\fB\-\-version\fR
+Print version information.
+.TP
+\fB\-\-no\-pager\fR
+Do not pipe output into a pager.
+.SH "SEE ALSO"
+\fBdate\fR(1), \fBhwclock\fR(1)

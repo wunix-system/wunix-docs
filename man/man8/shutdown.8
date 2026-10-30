@@ -1,0 +1,44 @@
+.TH SHUTDOWN 8 "2026-10-30" "Wunix" "System Administration"
+.SH NAME
+shutdown \- halt, power-off or reboot the machine
+.SH SYNOPSIS
+\fBshutdown\fR [\fIOPTIONS\fR]... [\fITIME\fR] [\fIWALL\fR...]
+.SH DESCRIPTION
+\fBshutdown\fR brings the system down in a secure way. All users are notified via wall messages, running filesystems are synchronized, and the machine is halted, powered off, or rebooted.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-P\fR, \fB\-\-poweroff\fR
+Power-off the machine (the default).
+.TP
+\fB\-r\fR, \fB\-\-reboot\fR
+Reboot the machine.
+.TP
+\fB\-H\fR, \fB\-\-halt\fR
+Halt the machine without ACPI poweroff.
+.TP
+\fB\-c\fR, \fB\-\-cancel\fR
+Cancel a pending shutdown.
+.TP
+\fB\-k\fR
+Only send wall warning messages, do not actually shut down.
+.TP
+\fB\-\-no\-wall\fR
+Do not send wall broadcast before shutdown.
+.TP
+\fB\-\-help\fR
+Display this help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version information.
+.SH "TIME SYNTAX"
+.TP
+\fBnow\fR or \fB+0\fR
+Immediate shutdown.
+.TP
+\fB+\fIm\fR
+Shut down in \fIm\fR minutes from now.
+.TP
+\fBhh:mm\fR
+Shut down at the specified time of day (24-hour format).
+.SH "SEE ALSO"
+\fBreboot\fR(8), \fBinit\fR(8)

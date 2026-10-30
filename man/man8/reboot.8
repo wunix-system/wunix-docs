@@ -1,0 +1,34 @@
+.TH REBOOT 8 "2026-10-30" "Wunix" "System Administration"
+.SH NAME
+reboot \- reboot, halt, or power-off the machine
+.SH SYNOPSIS
+\fBreboot\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBreboot\fR reboots, halts, or powers off the system hardware.
+.SH OPTIONS
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Force immediate reboot without clean shutdown or sync.
+.TP
+\fB\-p\fR, \fB\-\-poweroff\fR
+Power-off the machine instead of rebooting.
+.TP
+\fB\-d\fR, \fB\-\-halt\fR
+Halt the machine instead of rebooting.
+.TP
+\fB\-w\fR, \fB\-\-wtmp\-only\fR
+Only write wtmp record, do not reboot.
+.TP
+\fB\-n\fR, \fB\-\-no\-sync\fR
+Don't sync disks before reboot or halt.
+.TP
+\fB\-\-no\-wall\fR
+Don't send wall broadcast message before reboot.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version information and exit.
+.SH "SEE ALSO"
+\fBshutdown\fR(8), \fBinit\fR(8)
