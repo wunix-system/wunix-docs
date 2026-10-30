@@ -1,0 +1,25 @@
+.TH WSH 1 "2026-10-29" "Wunix" "User Commands"
+.SH NAME
+wsh \- Wunix command language interpreter (shell)
+.SH SYNOPSIS
+\fBwsh\fR [\fIOPTION\fR]... [\fISCRIPT\fR]
+.SH DESCRIPTION
+\fBwsh\fR is an interactive command language interpreter that executes commands read from standard input or from a script file. It features rich line editing, history navigation, pipe chaining, environment variable expansion, and job control.
+.SH "BUILT-IN COMMANDS"
+.TP
+\fBcd\fR [\fIPATH\fR]
+Change current working directory.
+.TP
+\fBpwd\fR
+Print working directory.
+.TP
+\fBexit\fR [\fISTATUS\fR]
+Exit the current shell session.
+.TP
+\fBexport\fR \fIVAR\fR=\fIVAL\fR
+Set environment variable.
+.TP
+\fBhistory\fR
+Display command history.
+.SH "SEE ALSO"
+\fBman\fR(1), \fBinit\fR(8)
