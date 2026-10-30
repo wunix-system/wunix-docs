@@ -1,0 +1,46 @@
+.TH CURL 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+curl \- transfer a URL using HTTP
+.SH SYNOPSIS
+\fBcurl\fR [\fIOPTIONS\fR]... \fIURL\fR
+.SH DESCRIPTION
+\fBcurl\fR is a tool for transferring data from or to a server using HTTP (GET, POST, HEAD, PUT, DELETE).
+.SH OPTIONS
+.TP
+\fB\-o\fR, \fB\-\-output\fR \fIFILE\fR
+Write output to FILE instead of stdout.
+.TP
+\fB\-O\fR, \fB\-\-remote\-name\fR
+Write output to a local file named like the remote file we get.
+.TP
+\fB\-s\fR, \fB\-\-silent\fR
+Silent mode. Do not print progress or error messages.
+.TP
+\fB\-S\fR, \fB\-\-show\-error\fR
+When used with \fB\-s\fR, make curl show an error message if it fails.
+.TP
+\fB\-i\fR, \fB\-\-include\fR
+Include HTTP response headers in the output.
+.TP
+\fB\-I\fR, \fB\-\-head\fR
+Fetch the HTTP headers only (HEAD method).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Make curl verbose during connection and transfer.
+.TP
+\fB\-X\fR, \fB\-\-request\fR \fIMETHOD\fR
+Specify custom HTTP request method to use (e.g. GET, POST, HEAD).
+.TP
+\fB\-d\fR, \fB\-\-data\fR \fIDATA\fR
+Send specified data in an HTTP POST request.
+.TP
+\fB\-H\fR, \fB\-\-header\fR \fIHEADER\fR
+Pass custom HTTP header to server.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
+.SH "SEE ALSO"
+\fBping\fR(8), \fBip\fR(8)

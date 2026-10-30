@@ -1,0 +1,9 @@
+.TH MOUNT 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+mount \- mount a filesystem
+.SH SYNOPSIS
+\fBmount\fR [\fB\-t\fR \fIFSTYPE\fR] \fIDEVICE\fR \fIDIR\fR
+.SH DESCRIPTION
+All files accessible in a Wunix system are arranged in one big tree, the file hierarchy, rooted at /. These files can be spread out over several devices. The \fBmount\fR command serves to attach the filesystem found on some device to the big file tree.
+.SH "SEE ALSO"
+\fBumount\fR(8), \fBfdisk\fR(8)

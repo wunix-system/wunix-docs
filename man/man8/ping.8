@@ -1,0 +1,29 @@
+.TH PING 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+ping \- send ICMP ECHO_REQUEST to network hosts
+.SH SYNOPSIS
+\fBping\fR [\fB\-c\fR \fICOUNT\fR] [\fB\-s\fR \fISIZE\fR] [\fB\-W\fR \fITIMEOUT\fR] \fIDESTINATION\fR
+.br
+\fBping\fR [\fB\-n\fR \fICOUNT\fR] [\fB\-l\fR \fISIZE\fR] [\fB\-w\fR \fITIMEOUT\fR] [\fB\-t\fR] \fIDESTINATION\fR
+.SH DESCRIPTION
+\fBping\fR uses the ICMP protocol's mandatory ECHO_REQUEST datagram to elicit an ICMP ECHO_RESPONSE from a host or gateway.
+.PP
+Supports both Unix CLI syntax (\fB\-c\fR, \fB\-s\fR, \fB\-W\fR) and Windows syntax (\fB\-n\fR, \fB\-l\fR, \fB\-w\fR, \fB\-t\fR).
+.SH OPTIONS
+.TP
+\fB\-c\fR, \fB\-n\fR \fICOUNT\fR
+Stop after sending COUNT ECHO_REQUEST packets.
+.TP
+\fB\-s\fR, \fB\-l\fR \fISIZE\fR
+Specify the number of data bytes to be sent. Default is 56 (64 with ICMP header).
+.TP
+\fB\-W\fR, \fB\-w\fR \fITIMEOUT\fR
+Time to wait for a response, in milliseconds.
+.TP
+\fB\-t\fR
+Ping the specified host until stopped (infinite ping).
+.TP
+\fB\-h\fR, \fB\-\-help\fR, \fB/?\fR
+Display help and exit.
+.SH "SEE ALSO"
+\fBip\fR(8), \fBcurl\fR(1)

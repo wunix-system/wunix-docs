@@ -1,0 +1,30 @@
+.TH IP 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+ip \- show or manipulate routing, devices and interfaces
+.SH SYNOPSIS
+\fBip\fR [\fIOPTIONS\fR] \fIOBJECT\fR [\fICOMMAND\fR]
+.br
+\fBipconfig\fR [\fB/all\fR] [\fB/?\fR]
+.SH DESCRIPTION
+\fBip\fR is a network administration tool for inspecting network interfaces, link layer devices, IP addresses, and routing tables.
+.PP
+When invoked as \fBipconfig\fR, it presents configuration in Windows NT CLI format.
+.SH OBJECTS
+.TP
+\fBaddr\fR, \fBa\fR
+Protocol (IP or IPv6) address on a device.
+.TP
+\fBlink\fR, \fBl\fR
+Network device (Ethernet, loopback, MAC address, MTU).
+.TP
+\fBroute\fR, \fBr\fR
+Routing table entry.
+.SH OPTIONS
+.TP
+\fB\-br\fR, \fB\-brief\fR
+Print only summary information in one-line tabular format.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.SH "SEE ALSO"
+\fBping\fR(8), \fBss\fR(8), \fBcurl\fR(1)

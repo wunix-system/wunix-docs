@@ -1,0 +1,9 @@
+.TH INIT 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+init \- system initialization process and service supervisor (PID 1)
+.SH SYNOPSIS
+\fBinit\fR
+.SH DESCRIPTION
+\fBinit\fR is the first user-space program executed by the Wunix kernel during system boot (PID 1). It initializes user environment, changes current directory to /home/user, launches the interactive command shell /bin/wsh, and reaps orphaned child processes.
+.SH "SEE ALSO"
+\fBwsh\fR(1), \fBwunix\fR(7)

@@ -1,0 +1,31 @@
+.TH SS 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+ss \- another utility to investigate sockets
+.SH SYNOPSIS
+\fBss\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBss\fR is used to dump socket statistics. It reads network state from /proc/net/tcp and /proc/net/udp.
+.SH OPTIONS
+.TP
+\fB\-t\fR, \fB\-\-tcp\fR
+Display TCP sockets.
+.TP
+\fB\-u\fR, \fB\-\-udp\fR
+Display UDP sockets.
+.TP
+\fB\-l\fR, \fB\-\-listening\fR
+Display only listening sockets.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Display both listening and non-listening sockets.
+.TP
+\fB\-n\fR, \fB\-\-numeric\fR
+Do not try to resolve service names.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information.
+.SH "SEE ALSO"
+\fBip\fR(8), \fBping\fR(8)

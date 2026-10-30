@@ -1,0 +1,19 @@
+.TH RM 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+rm \- remove files or directories
+.SH SYNOPSIS
+\fBrm\fR [\fIOPTION\fR]... \fIFILE\fR...
+.SH DESCRIPTION
+\fBrm\fR removes each specified file via the unlink system call.
+.SH OPTIONS
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore nonexistent files and arguments, never prompt.
+.TP
+\fB\-r\fR, \fB\-R\fR, \fB\-\-recursive\fR
+Remove directories and their contents recursively.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBtouch\fR(1), \fBls\fR(1)

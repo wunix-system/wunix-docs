@@ -1,0 +1,25 @@
+.TH LSBLK 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+lsblk \- list block devices
+.SH SYNOPSIS
+\fBlsblk\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBlsblk\fR lists information about all available block devices (hard drives, partitions, ramdisks, NVMe, virtio-blk).
+.SH OPTIONS
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+List all devices, including empty ones.
+.TP
+\fB\-b\fR, \fB\-\-bytes\fR
+Print the SIZE column in bytes rather than in a human-readable format.
+.TP
+\fB\-l\fR, \fB\-\-list\fR
+Produce output in the form of a flat list rather than a tree.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information.
+.SH "SEE ALSO"
+\fBfdisk\fR(8), \fBmount\fR(8)
