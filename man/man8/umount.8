@@ -1,0 +1,22 @@
+.TH UMOUNT 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+umount \- unmount file systems
+.SH SYNOPSIS
+\fBumount\fR [\fIOPTIONS\fR] \fIDIRECTORY\fR|\fIDEVICE\fR
+.SH DESCRIPTION
+\fBumount\fR detaches the file system(s) mentioned from the file hierarchy.
+.SH OPTIONS
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Force an unmount (in case of an unreachable system).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbose mode.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information.
+.SH "SEE ALSO"
+\fBmount\fR(8), \fBfdisk\fR(8)
