@@ -64,7 +64,7 @@
 [11. Загрузчик WUNIX и TUI-установщик] (Live-ISO vs Install, TUI инсталлятор, deploy на диск) ─► [ВЫПОЛНЕНО]
          │
          ▼
-[12. Драйверы систем виртуализации] (VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen)
+[12. Драйверы систем виртуализации] (VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen) ───► [ВЫПОЛНЕНО]
          │
          ▼
 [13. Импорт всех драйверов из Redox OS] (AHCI SATA, NVMe, e1000/igb, Realtek, xHCI/EHCI USB, HDA)
@@ -259,27 +259,27 @@
 ---
 
 ### Фаза 12: Драйверы систем виртуализации (VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen)
-- [ ] VirtualBox (Oracle VM VirtualBox):
-  - [ ] Драйвер шины гостевых интеграций VirtualBox Guest PCI Device (Vendor `0x80EE`, Device `0xCAFE`).
-  - [ ] Драйвер виртуального видеоадаптера VirtualBox Graphics Adapter (VBoxVGA / VBoxSVGA, Vendor `0x80EE`, Device `0xBEEF`).
-  - [ ] Интеграция указателя мыши VirtualBox Mouse Integration (абсолютные координаты без захвата курсора).
-  - [ ] Клиент монтирования общих папок хоста VirtualBox Shared Folders (VBoxSF) в дерево VFS.
-  - [ ] Служба синхронизации времени и событий гостя с гипервизором VirtualBox.
-- [ ] VMware (Workstation, Player, ESXi):
-  - [ ] Канал бэкдор-связи VMware Backdoor I/O (порты `0x5658`/`0x5659`, сигнатура `0x564D5868`) для обнаружения гипервизора.
-  - [ ] Видеоконтроллер VMware SVGA II (Vendor `0x15AD`, Device `0x0405`: ускоренные 2D/3D операции, аппаратный курсор).
-  - [ ] Сетевой адаптер VMware vmxnet3 (Vendor `0x15AD`, Device `0x07B0`: многоочередной высокопроизводительный паравиртуальный NIC).
-  - [ ] Контроллер дисков VMware PVSCSI (Vendor `0x15AD`, Device `0x07C0`: паравиртуальный SCSI адаптер).
-  - [ ] Интеграция указателя VMware Absolute Mouse (VMMOUSE).
-- [ ] Microsoft Hyper-V (Windows Server, Azure, Windows 10/11 Pro):
-  - [ ] Архитектура шины синтетических устройств Microsoft VMBus (каналы передачи сообщений, кольцевые буферы GPADL).
-  - [ ] Видеоадаптер Hyper-V Synthetic Video.
-  - [ ] Сетевой адаптер NetVSC (Hyper-V Network Virtual Service Client).
-  - [ ] Дисковый контроллер StorVSC (Hyper-V Storage Virtual Service Client).
-  - [ ] Базовые сервисы интеграции Hyper-V Integration Services: Heartbeat, Shutdown, KVP (Key-Value Pair).
-- [ ] Proxmox VE, KVM / QEMU и Xen:
-  - [ ] Аудит и расширение VirtIO для Proxmox/KVM: VirtIO Balloon (динамическое управление памятью), VirtIO Console, VirtIO RNG (генератор случайных чисел), VirtIO SCSI.
-  - [ ] Интерфейс гипервизора Xen (Xen Paravirtualization): гипервызовы (Hypercalls), страницы общего доступа (Grant Tables), блочные и сетевые PV-драйверы Xen.
+- [x] VirtualBox (Oracle VM VirtualBox):
+  - [x] Драйвер шины гостевых интеграций VirtualBox Guest PCI Device (Vendor `0x80EE`, Device `0xCAFE`).
+  - [x] Драйвер виртуального видеоадаптера VirtualBox Graphics Adapter (VBoxVGA / VBoxSVGA, Vendor `0x80EE`, Device `0xBEEF`).
+  - [x] Интеграция указателя мыши VirtualBox Mouse Integration (абсолютные координаты без захвата курсора).
+  - [x] Клиент монтирования общих папок хоста VirtualBox Shared Folders (VBoxSF) в дерево VFS.
+  - [x] Служба синхронизации времени и событий гостя с гипервизором VirtualBox.
+- [x] VMware (Workstation, Player, ESXi):
+  - [x] Канал бэкдор-связи VMware Backdoor I/O (порты `0x5658`/`0x5659`, сигнатура `0x564D5868`) для обнаружения гипервизора.
+  - [x] Видеоконтроллер VMware SVGA II (Vendor `0x15AD`, Device `0x0405`: ускоренные 2D/3D операции, аппаратный курсор).
+  - [x] Сетевой адаптер VMware vmxnet3 (Vendor `0x15AD`, Device `0x07B0`: многоочередной высокопроизводительный паравиртуальный NIC).
+  - [x] Контроллер дисков VMware PVSCSI (Vendor `0x15AD`, Device `0x07C0`: паравиртуальный SCSI адаптер).
+  - [x] Интеграция указателя VMware Absolute Mouse (VMMOUSE).
+- [x] Microsoft Hyper-V (Windows Server, Azure, Windows 10/11 Pro):
+  - [x] Архитектура шины синтетических устройств Microsoft VMBus (каналы передачи сообщений, кольцевые буферы GPADL).
+  - [x] Видеоадаптер Hyper-V Synthetic Video.
+  - [x] Сетевой адаптер NetVSC (Hyper-V Network Virtual Service Client).
+  - [x] Дисковый контроллер StorVSC (Hyper-V Storage Virtual Service Client).
+  - [x] Базовые сервисы интеграции Hyper-V Integration Services: Heartbeat, Shutdown, KVP (Key-Value Pair).
+- [x] Proxmox VE, KVM / QEMU и Xen:
+  - [x] Аудит и расширение VirtIO для Proxmox/KVM: VirtIO Balloon (динамическое управление памятью), VirtIO Console, VirtIO RNG (генератор случайных чисел), VirtIO SCSI.
+  - [x] Интерфейс гипервизора Xen (Xen Paravirtualization): гипервызовы (Hypercalls), страницы общего доступа (Grant Tables), блочные и сетевые PV-драйверы Xen.
 
 ---
 
