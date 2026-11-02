@@ -41,14 +41,19 @@ Wunix organizes man pages into standard UNIX sections:
 | Utility | Description |
 |:---|:---|
 | [`cat(1)`](man1/cat.1) | Concatenates and prints file contents to standard output. |
+| [`chmod(1)`](man1/chmod.1) | Changes file mode bits (octal and symbolic permission modes). |
+| [`chown(1)`](man1/chown.1) | Changes user owner and group of files. |
 | [`clear(1)`](man1/clear.1) | Clears terminal screen buffer and resets cursor position. |
 | [`curl(1)`](man1/curl.1) | Performs HTTP requests and fetches web content over the network. |
 | [`date(1)`](man1/date.1) | Displays and formats the current system date and time. |
 | [`echo(1)`](man1/echo.1) | Prints command-line argument strings to the terminal. |
 | [`fbset(1)`](man1/fbset.1) | Displays framebuffer resolution and color mode settings. |
 | [`free(1)`](man1/free.1) | Displays total, used, and available physical memory. |
+| [`host(1)`](man1/host.1) | DNS lookup utility for resolving host names and IP addresses (nslookup). |
 | [`hwclock(1)`](man1/hwclock.1) | Reads and synchronizes hardware CMOS RTC time. |
+| [`id(1)`](man1/id.1) | Prints user and group information (UID/GID and supplementary groups). |
 | [`ln(1)`](man1/ln.1) | Creates symbolic links within the VFS hierarchy. |
+| [`login(1)`](man1/login.1) | Initializes a user session and authenticates user credentials. |
 | [`ls(1)`](man1/ls.1) | Lists directory contents and file metadata. |
 | [`lsdev(1)`](man1/lsdev.1) | Lists registered character and block devices. |
 | [`lsmod(1)`](man1/lsmod.1) | Displays loaded kernel drivers and hardware modules. |
@@ -57,16 +62,19 @@ Wunix organizes man pages into standard UNIX sections:
 | [`man(1)`](man1/man.1) | Interactive manual pages viewer. |
 | [`mkdir(1)`](man1/mkdir.1) | Creates directories in the VFS tree. |
 | [`modinfo(1)`](man1/modinfo.1) | Displays driver metadata and version attributes. |
+| [`passwd(1)`](man1/passwd.1) | Updates user authentication password in /etc/shadow. |
 | [`pwd(1)`](man1/pwd.1) | Prints canonical path of the current working directory. |
 | [`readlink(1)`](man1/readlink.1) | Resolves and prints symbolic link targets. |
 | [`reg(1)`](man1/reg.1) | Inspects and modifies the virtual Windows NT registry. |
 | [`rm(1)`](man1/rm.1) | Removes files from the filesystem. |
 | [`rmdir(1)`](man1/rmdir.1) | Deletes empty directories. |
+| [`su(1)`](man1/su.1) | Runs a shell with substitute user and group ID (default root). |
 | [`time(1)`](man1/time.1) | Measures execution duration of specified commands. |
 | [`timedatectl(1)`](man1/timedatectl.1) | Configures time zones and system clock parameters. |
 | [`top(1)`](man1/top.1) | Dynamic process and memory activity monitor. |
 | [`touch(1)`](man1/touch.1) | Creates empty files or touches modification timestamps. |
 | [`uname(1)`](man1/uname.1) | Prints operating system name, kernel release, and CPU architecture. |
+| [`whoami(1)`](man1/whoami.1) | Prints current effective user name (EUID). |
 | [`wsh(1)`](man1/wsh.1) | Wunix interactive command shell. |
 
 ---
@@ -84,4 +92,7 @@ Wunix organizes man pages into standard UNIX sections:
 | [`reboot(8)`](man8/reboot.8) | Flushes dirty buffers and restarts the system. |
 | [`shutdown(8)`](man8/shutdown.8) | Shuts down the operating system and powers down via ACPI. |
 | [`ss(8)`](man8/ss.8) | Displays active TCP/UDP socket connections and listening ports. |
+| [`sudo(8)`](man8/sudo.8) | Executes a command with superuser (root) privileges. |
 | [`umount(8)`](man8/umount.8) | Unmounts filesystems from the VFS. |
+| [`useradd(8)`](man8/useradd.8) | Creates a new user account and home directory. |
+| [`userdel(8)`](man8/userdel.8) | Deletes a user account and associated user files. |

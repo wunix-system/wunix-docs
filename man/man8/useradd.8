@@ -1,0 +1,30 @@
+.TH USERADD 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+useradd \- create a new user account and home directory
+.SH SYNOPSIS
+\fBuseradd\fR [\fIOPTION\fR]... \fIUSERNAME\fR
+.SH DESCRIPTION
+\fBuseradd\fR is a low-level utility for adding new user accounts to the system. It creates entries in \fB/etc/passwd\fR, \fB/etc/shadow\fR, and \fB/etc/group\fR, allocates a unique UID and GID, and creates the user's home directory.
+.SH OPTIONS
+.TP
+\fB\-m\fR, \fB\-\-create\-home\fR
+Create the user's home directory (enabled by default).
+.TP
+\fB\-d\fR, \fB\-\-home\-dir\fR \fIDIR\fR
+Explicitly specify the home directory path for the new user.
+.TP
+\fB\-s\fR, \fB\-\-shell\fR \fISHELL\fR
+Login shell for the new user (default is \fB/bin/wsh\fR).
+.TP
+\fB\-u\fR, \fB\-\-uid\fR \fIUID\fR
+Explicit numerical user ID.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+useradd developer
+.TP
+useradd -s /bin/wsh -d /home/admin admin
+.SH "SEE ALSO"
+\fBuserdel\fR(8), \fBpasswd\fR(1), \fBchown\fR(1), \fBlogin\fR(1)

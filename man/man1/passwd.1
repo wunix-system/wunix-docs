@@ -1,0 +1,18 @@
+.TH PASSWD 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+passwd \- change user password
+.SH SYNOPSIS
+\fBpasswd\fR [\fIOPTION\fR]... [\fIUSER\fR]
+.SH DESCRIPTION
+\fBpasswd\fR updates the user's authentication tokens (password hash) in \fB/etc/shadow\fR. Normal users may only change the password for their own account, whereas the superuser root may change the password for any account without knowing the current password.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+passwd
+.TP
+passwd root
+.SH "SEE ALSO"
+\fBlogin\fR(1), \fBsu\fR(1), \fBuseradd\fR(8)

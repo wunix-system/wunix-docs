@@ -1,0 +1,20 @@
+.TH SUDO 8 "2026-10-30" "Wunix" "System Administration Commands"
+.SH NAME
+sudo \- execute a command as superuser root
+.SH SYNOPSIS
+\fBsudo\fR [\fIOPTION\fR] \fICOMMAND\fR [\fIARGUMENTS\fR...]
+.SH DESCRIPTION
+\fBsudo\fR allows a permitted user to execute a command with superuser privileges (as user root). If invoked by an unprivileged user, \fBsudo\fR checks membership in the administrative group (e.g. \fBwheel\fR) and prompts for the user's password before executing the target binary.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+sudo fdisk /dev/vda
+.TP
+sudo mount -t vfat /dev/vda1 /mnt
+.TP
+sudo useradd newuser
+.SH "SEE ALSO"
+\fBsu\fR(1), \fBpasswd\fR(1), \fBid\fR(1)

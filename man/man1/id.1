@@ -1,0 +1,18 @@
+.TH ID 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+id \- print real and effective user and group IDs
+.SH SYNOPSIS
+\fBid\fR [\fIOPTION\fR]... [\fIUSER\fR]
+.SH DESCRIPTION
+\fBid\fR prints user and group information for the current process, or for the specified \fIUSER\fR name. The output includes numeric UID, user name, GID, group name, and supplementary groups.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+id
+.TP
+id root
+.SH "SEE ALSO"
+\fBwhoami\fR(1), \fBsu\fR(1), \fBpasswd\fR(1)

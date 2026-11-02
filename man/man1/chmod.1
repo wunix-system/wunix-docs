@@ -1,0 +1,24 @@
+.TH CHMOD 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+chmod \- change file mode bits (permissions)
+.SH SYNOPSIS
+\fBchmod\fR [\fIOPTION\fR]... \fIMODE\fR \fIFILE\fR...
+.SH DESCRIPTION
+\fBchmod\fR changes the file mode bits of each given \fIFILE\fR according to \fIMODE\fR, which can be either an octal number or a symbolic representation of changes to make.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH "MODE SPECIFICATION"
+Octal modes consist of 3 or 4 octal digits (e.g. 755, 0644, 4755 for SUID).
+.br
+Symbolic modes have the form [ugoa...][[+-=][perms...]...], where perms can be zero or more letters from r, w, and x (e.g. +x, -w, u+x, a+r).
+.SH EXAMPLES
+.TP
+chmod 755 /bin/app
+.TP
+chmod +x script.sh
+.TP
+chmod 4755 /bin/su
+.SH "SEE ALSO"
+\fBchown\fR(1), \fBls\fR(1), \fBstat\fR(2)

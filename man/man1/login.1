@@ -1,0 +1,19 @@
+.TH LOGIN 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+login \- begin session on the system
+.SH SYNOPSIS
+\fBlogin\fR [\fB\-p\fR] [\fB\-f\fR \fIuser\fR] [\fIuser\fR]
+.SH DESCRIPTION
+\fBlogin\fR is used to establish a new session with the system. It prompts the user for a username and password, displaying masking asterisks (\fB*\fR) on password input instead of hiding characters completely, authenticates credentials against \fB/etc/passwd\fR and \fB/etc/shadow\fR, configures process UID/GID and environment variables (USER, LOGNAME, HOME, SHELL, PATH, TERM), changes directory to the user's home, and starts the login shell.
+.SH OPTIONS
+.TP
+\fB\-f\fR \fIuser\fR
+Force login as the specified user without requesting a password (root only).
+.TP
+\fB\-p\fR
+Preserve the existing environment variables.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help summary and exit.
+.SH "SEE ALSO"
+\fBpasswd\fR(1), \fBsu\fR(1), \fBwsh\fR(1), \fBinit\fR(8)

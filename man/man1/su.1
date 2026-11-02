@@ -1,0 +1,20 @@
+.TH SU 1 "2026-10-30" "Wunix" "User Commands"
+.SH NAME
+su \- run a command shell with substitute user and group ID
+.SH SYNOPSIS
+\fBsu\fR [\fIOPTION\fR]... [\fIUSER\fR]
+.SH DESCRIPTION
+\fBsu\fR switches the current user session to that of \fIUSER\fR (defaulting to superuser \fBroot\fR). If the caller is not root, \fBsu\fR prompts for the target user's password. Upon successful verification, it changes UID/GID, updates environment variables, and launches the target user's shell.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+su
+.TP
+su root
+.TP
+su user
+.SH "SEE ALSO"
+\fBsudo\fR(8), \fBlogin\fR(1), \fBid\fR(1), \fBwhoami\fR(1)
