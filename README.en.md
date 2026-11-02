@@ -38,7 +38,7 @@ The documentation is organized into technical domains, with every document maint
 
 ### 4. Development Roadmap ([`roadmap/`](roadmap/))
 - **[Development Roadmap and Status](roadmap/roadmap.en.md)** ([Русский](roadmap/roadmap.ru.md)):
-  - Milestone summary, status of completed phases 1–9, active phase 10 (Multi-User & Security), and planned phases 11–12 (Redox OS driver import and hardware coverage audit).
+  - Milestone summary, status of completed phases 1–10 (including multi-user security, accounts, and VFS permissions), and roadmap for phases 11–12 (Redox OS driver import and hardware coverage audit).
 
 ### 5. Developer Guides ([`guides/`](guides/))
 - **[Building, Booting, and Debugging Wunix](guides/development.en.md)** ([Русский](guides/development.ru.md)):

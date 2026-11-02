@@ -19,7 +19,7 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **7** | **First Process & WSH** | Process `/bin/init`, Wunix Shell, core utilities | ✅ **Completed** | Interactive user console in Ring 3, launching binaries from VFS (init, wsh, echo, cat, ls, clear, uname, rm, free, top). |
 | **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ✅ **Completed** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
 | **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Rust network stack (`smoltcp`), BSD sockets, `ping`, `curl`, `ip`, `fdisk`, `lsblk`, `mount` | ✅ **Completed** | Production Linux ABI (Ring 3 runtimes verified). Rust network stack: packet RX/TX, TCP/UDP/ICMP, FAT32 persistent disk mounting, persistence. |
-| **10** | **Users & Access Control** | UID/GID model, `/etc/passwd`, `/etc/shadow`, POSIX VFS permissions (rwx, suid), `login`, `su`, `sudo`, `chmod`, `chown` | 🔄 **In Progress** | Secure multi-user environment, password authentication, process privilege separation, and VFS access control. |
+| **10** | **Users & Access Control** | UID/GID model, `/etc/passwd`, `/etc/shadow`, POSIX VFS permissions (rwx, suid), `login`, `su`, `sudo`, `sudoadd`, `chmod`, `chown` | ✅ **Completed** | Secure multi-user environment, password authentication, process privilege separation, and VFS access control. |
 | **11** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
 | **12** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
 
@@ -55,7 +55,7 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [9. Rust Network Stack & Storage Tools] ────────────────────────► [COMPLETED]
          │
          ▼
-[10. Users & Access Control] ───────────────────────────────────► [IN PROGRESS: UID/GID, /etc/passwd, shadow, su/sudo]
+[10. Users & Access Control] (UID/GID, /etc/passwd, shadow, VFS perms, su/sudo) ──────────► [COMPLETED]
          │
          ▼
 [11. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
@@ -171,27 +171,28 @@ This document tracks the milestones of the Wunix kernel and base system, current
   - [x] `man` utility with offline documentation manual pages (`/usr/share/man/ru/man1/`, `/usr/share/man/en/man1/`).
 
 ### Phase 10: Users & Access Control (Multi-User & Security)
-- [ ] Process and user identity model:
-  - [ ] Account fields in TCB/PCB: UID, GID, Effective UID (EUID), Effective GID (EGID), Saved UID/GID.
-  - [ ] Superuser `root` (UID 0, GID 0) and default unprivileged user (`valdis`, UID 1000).
-  - [ ] Identity syscalls: `SYS_GETUID` (102), `SYS_SETUID` (105), `SYS_GETGID` (104), `SYS_SETGID` (106), `SYS_GETEUID` (107), `SYS_GETEGID` (108).
-- [ ] Account configuration database in VFS:
-  - [ ] `/etc/passwd`: accounts, UID/GID, home directories (`/home/<user>`), login shell (`/bin/wsh`).
-  - [ ] `/etc/group`: user groups and membership lists.
-  - [ ] `/etc/shadow`: secure storage of hashed passwords (SHA-256 / SHA-512) with `root`-only access (`0600`).
-- [ ] VFS access permissions (POSIX Permissions):
-  - [ ] Inode metadata: permission mode `mode` (Owner, Group, Others with `rwx` flags), `SUID`, `SGID`, `Sticky bit`.
-  - [ ] Kernel-level permission checks during `SYS_OPEN`, `SYS_READ`, `SYS_WRITE`, `SYS_EXECVE`, `SYS_UNLINK`.
-  - [ ] File creation mask `umask` (`SYS_UMASK`, 95).
-  - [ ] Permission management syscalls: `SYS_CHMOD` (90), `SYS_FCHMOD` (91), `SYS_CHOWN` (92), `SYS_FCHOWN` (93).
-- [ ] User and session management utilities for WSH:
-  - [ ] `login` utility: terminal password authentication.
-  - [ ] `su` and `sudo` utilities: privilege switching and executing commands as root.
-  - [ ] `id` and `whoami` utilities: displaying current user identity and groups.
-  - [ ] `passwd` utility: interactive account password change.
-  - [ ] `useradd` and `userdel` utilities: user account creation and deletion with `/home/<user>`.
-  - [ ] `chmod` and `chown` utilities: modifying file permissions and ownership.
-  - [ ] `wsh` integration: prompt updates based on privileges (`$` for unprivileged user, `#` for root).
+- [x] Process and user identity model:
+  - [x] Account fields in TCB/PCB: UID, GID, Effective UID (EUID), Effective GID (EGID), Saved UID (SUID), Saved GID (SGID), `umask`.
+  - [x] Privileged superuser `root` (UID 0, GID 0) with default initial session in `/root` without password.
+  - [x] Identity syscalls: `SYS_GETUID` (102), `SYS_SETUID` (105), `SYS_GETGID` (104), `SYS_SETGID` (106), `SYS_GETEUID` (107), `SYS_GETEGID` (108), `SYS_UMASK` (95).
+- [x] Account configuration databases in VFS:
+  - [x] File `/etc/passwd`: accounts, UID/GID, home directories (`/home/<user>`), login shell (`/bin/wsh`).
+  - [x] File `/etc/group`: user groups (`root`, `wheel`) and membership lists.
+  - [x] File `/etc/shadow`: secure storage of hashed passwords (FIPS 180-4 SHA-256 with salt in `$5$salt$hash` format) restricted to `root` (`0600`).
+- [x] VFS access permissions (POSIX Permissions):
+  - [x] Inode metadata: permission mode `mode` (Owner, Group, Others with `rwx` flags), `SUID` (04000), `SGID` (02000), `Sticky bit` (01000) for `/tmp`.
+  - [x] Kernel-level permission checks during `SYS_OPEN`, `SYS_READ`, `SYS_WRITE`, `SYS_EXECVE`, `SYS_UNLINK`, `SYS_MKDIR`, `SYS_RMDIR`.
+  - [x] File creation mask `umask` (`SYS_UMASK`, 95) and permission inheritance in RamFS/Initramfs.
+  - [x] Permission management syscalls: `SYS_CHMOD` (90), `SYS_FCHMOD` (91), `SYS_CHOWN` (92), `SYS_FCHOWN` (93).
+- [x] User and session management utilities for WSH:
+  - [x] `login` utility: terminal password authentication (passwordless root login, SHA-256 hash verification for users, `*` masking, backspace handling).
+  - [x] `su` and `sudo` utilities: privilege switching and executing commands as root (`wheel` group members).
+  - [x] `sudoadd` utility: granting and revoking administrative sudo privileges (`wheel` group membership).
+  - [x] `id` and `whoami` utilities: displaying current user identity and groups with name resolution.
+  - [x] `passwd` utility: interactive account password modification with `*` masking and SHA-256 salt/hash generation.
+  - [x] `useradd` and `userdel` utilities: user account creation and deletion with `/home/<user>` directory lifecycle.
+  - [x] `chmod` and `chown` utilities: modifying file permissions (octal and symbolic modes) and ownership.
+  - [x] `wsh` and `init` integration: starting initial session as root in `/root`, `#` prompt for root and `>` for unprivileged users, automated respawn of `/bin/login` on session exit (`exit`).
 
 ### Phase 11: Redox OS Driver Import & Adaptation
 - [ ] Adapter layer for Redox OS bus and device traits mapped to Wunix VFS and DeviceManager.
