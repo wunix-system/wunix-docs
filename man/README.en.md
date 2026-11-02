@@ -93,6 +93,7 @@ Wunix organizes man pages into standard UNIX sections:
 | [`shutdown(8)`](man8/shutdown.8) | Shuts down the operating system and powers down via ACPI. |
 | [`ss(8)`](man8/ss.8) | Displays active TCP/UDP socket connections and listening ports. |
 | [`sudo(8)`](man8/sudo.8) | Executes a command with superuser (root) privileges. |
+| [`sudoadd(8)`](man8/sudoadd.8) | Grants or revokes administrative sudo privileges (wheel group). |
 | [`umount(8)`](man8/umount.8) | Unmounts filesystems from the VFS. |
 | [`useradd(8)`](man8/useradd.8) | Creates a new user account and home directory. |
 | [`userdel(8)`](man8/userdel.8) | Deletes a user account and associated user files. |

@@ -1,0 +1,21 @@
+.TH SUDOADD 8 "2026-11-02" "Wunix" "Команды системного администрирования"
+.SH ИМЯ
+sudoadd \- предоставление или отзыв прав sudo для пользователя
+.SH СИНТАКСИС
+\fBsudoadd\fR [\fIОПЦИИ\fR] \fIИМЯ_ПОЛЬЗОВАТЕЛЯ\fR
+.SH ОПИСАНИЕ
+\fBsudoadd\fR \- утилита системного администрирования Wunix, добавляющая пользователя в группу \fBwheel\fR и предоставляющая ему возможность запускать команды с правами root через \fBsudo\fR. Поддерживает отзыв привилегий через опцию \fB\-d\fR.
+.SH ОПЦИИ
+.TP
+\fB\-d\fR, \fB\-\-delete\fR, \fB\-r\fR, \fB\-\-remove\fR
+Отозвать права sudo (удалить пользователя из группы wheel).
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Показать эту справку и выйти.
+.SH ПРИМЕРЫ
+.TP
+sudoadd alex
+.TP
+sudoadd -d alex
+.SH "СМ. ТАКЖЕ"
+\fBsudo\fR(8), \fBuseradd\fR(8), \fBuserdel\fR(8), \fBpasswd\fR(1)

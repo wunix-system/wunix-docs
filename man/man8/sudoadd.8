@@ -1,0 +1,21 @@
+.TH SUDOADD 8 "2026-11-02" "Wunix" "System Administration Commands"
+.SH NAME
+sudoadd \- grant or revoke sudo privileges for a user
+.SH SYNOPSIS
+\fBsudoadd\fR [\fIOPTION\fR] \fIUSERNAME\fR
+.SH DESCRIPTION
+\fBsudoadd\fR is an administrative utility that adds a user account to the \fBwheel\fR group, granting them authorization to execute commands as superuser root via \fBsudo\fR. It also supports revoking sudo access via \fB\-d\fR.
+.SH OPTIONS
+.TP
+\fB\-d\fR, \fB\-\-delete\fR, \fB\-r\fR, \fB\-\-remove\fR
+Revoke sudo privileges (remove user from the wheel group).
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH EXAMPLES
+.TP
+sudoadd alex
+.TP
+sudoadd -d alex
+.SH "SEE ALSO"
+\fBsudo\fR(8), \fBuseradd\fR(8), \fBuserdel\fR(8), \fBpasswd\fR(1)
