@@ -1,25 +1,83 @@
-# Wunix Documentation / Документация Wunix
+# Wunix: Документация и техническая база знаний (Wiki)
 
-Select your language / Выберите язык документации:
-
-- 🇷🇺 **[Документация на русском языке (RU)](README.ru.md)**
-- 🇬🇧 **[Documentation in English (EN)](README.en.md)**
+> **Wunix** — независимая современная гибридная операционная система с открытым исходным кодом, разрабатываемая с нуля на языке **Rust** для архитектуры x86_64. Система сочетает высокую безопасность управления памятью, строгое следование стандартам UNIX/POSIX и нативную поддержку подсистемы Windows NT (гибридный диск `C:\`, системный реестр, пути Win32).
 
 ---
 
-## Quick Navigation / Быстрая навигация
+## 0. О системе Wunix
 
-| Section / Раздел | 🇷🇺 Русский (RU) | 🇬🇧 English (EN) |
-|---|---|---|
-| **System Overview / Обзор системы** | [`architecture/overview.ru.md`](architecture/overview.ru.md) | [`architecture/overview.en.md`](architecture/overview.en.md) |
-| **Kernel Architecture / Архитектура ядра** | [`architecture/kernel.ru.md`](architecture/kernel.ru.md) | [`architecture/kernel.en.md`](architecture/kernel.en.md) |
-| **Virtual File System / Файловая система (VFS)** | [`architecture/vfs.ru.md`](architecture/vfs.ru.md) | [`architecture/vfs.en.md`](architecture/vfs.en.md) |
-| **System Calls (Dual ABI) / Системные вызовы** | [`architecture/syscalls.ru.md`](architecture/syscalls.ru.md) | [`architecture/syscalls.en.md`](architecture/syscalls.en.md) |
-| **Libraries & Runtime / Библиотеки и рантайм** | [`architecture/libraries.ru.md`](architecture/libraries.ru.md) | [`architecture/libraries.en.md`](architecture/libraries.en.md) |
-| **Drivers & Hardware / Драйверы и железо** | [`architecture/drivers.ru.md`](architecture/drivers.ru.md) | [`architecture/drivers.en.md`](architecture/drivers.en.md) |
-| **Network Stack / Сетевой стек** | [`architecture/network.ru.md`](architecture/network.ru.md) | [`architecture/network.en.md`](architecture/network.en.md) |
-| **Manual Pages (Commands) / Справочник утилит** | [`man/README.ru.md`](man/README.ru.md) | [`man/README.en.md`](man/README.en.md) |
-| **Localization Subsystem / Локализация** | [`localization/README.ru.md`](localization/README.ru.md) | [`localization/README.en.md`](localization/README.en.md) |
-| **Translation Guide / Руководство по переводу** | [`localization/translation-guide.ru.md`](localization/translation-guide.ru.md) | [`localization/translation-guide.en.md`](localization/translation-guide.en.md) |
-| **Development Roadmap / Дорожная карта** | [`roadmap/roadmap.ru.md`](roadmap/roadmap.ru.md) | [`roadmap/roadmap.en.md`](roadmap/roadmap.en.md) |
-| **Build & Run Guide / Сборка и запуск** | [`guides/development.ru.md`](guides/development.ru.md) | [`guides/development.en.md`](guides/development.en.md) |
+### 0.1. Концепция и видение
+Цель проекта — создание полноценной, надёжной, расширяемой и самодостаточной операционной системы, пригодной для практического повседневного использования как системными администраторами и инженерами, так и обычными пользователями.
+
+В основе Wunix лежит синергия двух миров:
+1. **UNIX/POSIX фундамент**: строгая изоляция пользователей (UID/GID), иерархия каталогов (`/bin`, `/etc`, `/home`, `/dev`, `/proc`, `/sys`), модель прав доступа (rwx, suid), пайпы (IPC) и стандартные утилиты CLI.
+2. **Windows NT совместимость**: встроенная проекция гибридного диска `C:\`, поддержка обратных слешей `\` и регистронезависимого поиска путей, подсистема системного реестра (`/win/registry`, утилита `reg`) и бинарный интерфейс для будущей совместимости с Win32 PE/COFF.
+
+### 0.2. Ключевые компоненты платформы
+Платформа Wunix состоит из логически изолированных слоёв:
+* **Wunix Core (Ядро)**: гибридное модульное 64-битное ядро на чистом Rust (Long Mode, higher-half `0xFFFF_8000_...`, протокол Limine). Управляет распределением памяти, процессами, системными вызовами (Dual ABI), драйверами оборудования и виртуальной файловой системой.
+* **Wunix Base (Пользовательская среда)**: системная библиотека рантайма [`libwunix`](file:///home/valdis/my-os/libs/libwunix), процесс инициализации `init` (PID 1), командная оболочка `wsh` (Wunix Shell) и свыше 50 системных утилит в `programs/`.
+* **Wunix Storage & VFS**: единое виртуальное дерево файловой системы, объединяющее оперативную память (`ramfs` / `initramfs`), постоянные дисковые разделы `FAT32` (с поддержкой длинных имен LFN), псевдофайловые системы `/proc` и `/sys`, и проекцию `C:\`.
+* **Wunix Network Stack**: собственный высокопроизводительный сетевой стек на Rust (L2/L3/L4: Ethernet, ARP, IPv4, ICMP, UDP, TCP) поверх драйвера VirtIO-Net.
+* **Wunix Security**: модель разграничения прав доступа, база пользователей и групп (`/etc/passwd`, `/etc/shadow`, `/etc/group`, `/etc/sudoers`), утилиты `login`, `su`, `sudo`, `sudoadd`, маскировка паролей и изоляция адресных пространств процессов (Ring 3).
+* **Wunix Installer & Boot**: загрузочное меню Limine (Live-ISO / Install), автономная загрузка с диска или флешки и TUI-установщик `winstall` с визуальной разметкой MBR/GPT.
+
+---
+
+## Навигация по документации (Wiki)
+
+Документация структурирована по целевым ролям и подсистемам:
+
+```
+docs/
+├── README.md               # [0. Общий манифест и навигация по Wiki]
+├── TODO.md                 # [0.1. Обновляемая дорожная карта и статус задач]
+│
+├── user/                   # [1. Руководство пользователя]
+│   ├── README.md           # Обзор пользовательского окружения и основы
+│   ├── getting-started.md  # Быстрый старт: загрузка, Live-режим, первые шаги
+│   ├── programs.md         # Полный каталог пользовательских утилит CLI
+│   └── environment.md      # Настройка профиля, WSH, локаль, переменные среды
+│
+├── admin/                  # [2. Руководство системного администратора]
+│   ├── README.md           # Основы администрирования и архитектура безопасности
+│   ├── users-and-groups.md # Учетные записи, пароли, sudo и права доступа
+│   ├── disk-and-storage.md # Разметка MBR, форматирование, монтирование FAT32
+│   ├── network.md          # Настройка IP, маршрутизация, DNS, диагностика
+│   ├── installation.md     # Установка Wunix на диск через TUI winstall
+│   ├── registry.md         # Управление реестром Windows NT (reg, system.reg)
+│   └── system-services.md  # Процесс init, выключение, reboot, системные часы
+│
+├── dev/                    # [3. Руководство разработчика]
+│   ├── README.md           # Философия разработки, тулчейн и среда
+│   ├── building.md         # Сборка ядра, initramfs и ISO-образа (run.sh)
+│   ├── kernel-structure.md # Устройство исходного кода ядра (kernel/src/)
+│   ├── creating-programs.md# Написание новых утилит на Rust через libwunix
+│   └── coding-standards.md # Инженерные стандарты ub-mode, TDD, SRP, i18n
+│
+├── tech/                   # [4. Полная техническая документация]
+│   ├── README.md           # Архитектурное резюме ядра Wunix
+│   ├── architecture.md     # Глубокая архитектура: Ring 0/3, HHDM, GDT/IDT
+│   ├── syscalls.md         # Исчерпывающая спецификация системных вызовов
+│   ├── vfs-and-storage.md  # Виртуальная файловая система, VFS трейты, RAMFS, FAT32
+│   ├── process-and-scheduler.md # Управление процессами, TCB, планировщик
+│   ├── memory-management.md# Физический и виртуальный менеджеры памяти, куча
+│   ├── network-stack.md    # Сетевой стек ядра: уровни L2, L3, L4, сокеты
+│   ├── drivers-subsystem.md# Подсистема оборудования, PCI, VirtIO, Framebuffer
+│   └── i18n-subsystem.md   # Мультиязычность ядра: runtime трансляция
+│
+└── man/                    # [Справочные страницы man1 и man8 для системы]
+    ├── man1/               # Пользовательские команды (cat, ls, curl, wsh...)
+    ├── man8/               # Административные утилиты (fdisk, mount, ip, useradd...)
+    └── ru/                 # Локализованные версии руководств на русском языке
+```
+
+---
+
+## Быстрый переход к разделам
+
+* 🚀 **Хотите попробовать систему в деле?** → Перейдите в [Руководство пользователя: Быстрый старт](user/getting-started.md).
+* ⚙️ **Хотите развернуть систему на диск или настроить сеть?** → Перейдите в [Руководство администратора](admin/README.md).
+* 💻 **Хотите собрать ядро из исходников или написать программу?** → Перейдите в [Руководство разработчика: Сборка](dev/building.md).
+* 🔬 **Хотите изучить внутреннее устройство ядра и системные вызовы?** → Перейдите в [Техническую документацию](tech/README.md).
+* 📋 **Хотите узнать, на каком этапе проект и что в разработке?** → Перейдите в [Обновляемый TODO](TODO.md).
