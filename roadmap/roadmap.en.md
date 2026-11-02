@@ -20,8 +20,11 @@ This document tracks the milestones of the Wunix kernel and base system, current
 | **8** | **VirtIO Drivers (QEMU Full Stack)** | PCI Bus Scan, `virtio-blk`, `virtio-net`, `virtio-input`, `virtio-gpu` | ✅ **Completed** | Full QEMU virtualization stack: persistent disks, socket networking, virtual mouse and accelerated display. |
 | **9** | **Network Stack & Storage Tools** | Linux ABI (`mmap`, FS_BASE, `clone`, `futex`), Rust network stack (`smoltcp`), BSD sockets, `ping`, `curl`, `ip`, `fdisk`, `lsblk`, `mount` | ✅ **Completed** | Production Linux ABI (Ring 3 runtimes verified). Rust network stack: packet RX/TX, TCP/UDP/ICMP, FAT32 persistent disk mounting, persistence. |
 | **10** | **Users & Access Control** | UID/GID model, `/etc/passwd`, `/etc/shadow`, POSIX VFS permissions (rwx, suid), `login`, `su`, `sudo`, `sudoadd`, `chmod`, `chown` | ✅ **Completed** | Secure multi-user environment, password authentication, process privilege separation, and VFS access control. |
-| **11** | **Redox OS Driver Import** | AHCI SATA, NVMe, Intel e1000/e1000e, Realtek RTL8168/8111, xHCI (USB 3.0) | ⏳ *Planned* | Bare-metal x86_64 support: SSD/NVMe storage controllers, Gigabit Ethernet, and USB stack. |
-| **12** | **Driver Audit & Gap Coverage** | Hardware coverage audit, ACPI, APIC/IO-APIC, Wi-Fi, Intel HDA Audio | ⏳ *Planned* | Complete hardware inventory, identification and elimination of driver deficit gaps. |
+| **11** | **Wunix Bootloader & TUI Installer** | Boot Menu (Live-ISO / Install), TUI Installer (`winstall`), MBR/GPT partitioning, disk deployment | ⏳ *Planned* | Autonomous Wunix booting from disk/USB, Live-ISO / Install mode selection, terminal UI disk installation. |
+| **12** | **Virtualization Hypervisor Drivers** | VirtualBox (VBoxGuest, VBoxSVGA), VMware (SVGA II, vmxnet3, PVSCSI), Hyper-V (VMBus, NetVSC, StorVSC), Proxmox/Xen | ⏳ *Planned* | Seamless execution across all hypervisors: VirtualBox, VMware Workstation/ESXi, Microsoft Hyper-V, Proxmox VE, KVM, and Xen. |
+| **13** | **Full Redox OS Driver Import** | Complete Redox driver adaptation: AHCI SATA, NVMe, IDE, e1000/e1000e/igb, Realtek 8168/8139, xHCI/EHCI/UHCI USB, HDA/AC'97 | ⏳ *Planned* | Comprehensive physical x86_64 controller support: SATA/NVMe disks, Gigabit Ethernet, USB 1.1–3.0 stack, and audio. |
+| **14** | **Hardware Audit & Gap Coverage** | Hardware coverage audit, ACPI (DSDT/MADT/AML), Local APIC / IO-APIC, SMP, Wi-Fi stack, Intel HDA | ⏳ *Planned* | Exhaustive hardware inventory, SMP multicore bring-up, modern interrupt routing, power management, and Wi-Fi. |
+| **15** | **Advanced File Systems (EXT4, Btrfs)** | EXT2/EXT3/EXT4 driver (extents, inodes, JBD2), Btrfs (B-Tree, CoW, subvolumes, snapshots, CRC32c), `mkfs`, `fsck` | ⏳ *Planned* | Industrial-grade journaling and CoW filesystems: EXT4/Btrfs partition creation, instant snapshots, data integrity. |
 
 ---
 
@@ -58,10 +61,19 @@ This document tracks the milestones of the Wunix kernel and base system, current
 [10. Users & Access Control] (UID/GID, /etc/passwd, shadow, VFS perms, su/sudo) ──────────► [COMPLETED]
          │
          ▼
-[11. Redox OS Driver Import] (AHCI SATA, NVMe, Intel e1000, Realtek, xHCI USB)
+[11. Wunix Bootloader & TUI Installer] (Live-ISO vs Install, TUI installer, disk deploy)
          │
          ▼
-[12. Driver Audit & Gap Coverage] (ACPI, APIC, hardware inventory, Wi-Fi, HDA)
+[12. Hypervisor Virtualization Drivers] (VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen)
+         │
+         ▼
+[13. Complete Redox OS Driver Import] (AHCI SATA, NVMe, e1000/igb, Realtek, xHCI/EHCI USB, HDA)
+         │
+         ▼
+[14. Hardware Audit & Gap Coverage] (ACPI, APIC/IO-APIC, SMP multicore, Wi-Fi stack)
+         │
+         ▼
+[15. Advanced File Systems] (EXT4 extents/journaling, Btrfs CoW/snapshots/B-Tree)
 ```
 
 ---
@@ -194,18 +206,102 @@ This document tracks the milestones of the Wunix kernel and base system, current
   - [x] `chmod` and `chown` utilities: modifying file permissions (octal and symbolic modes) and ownership.
   - [x] `wsh` and `init` integration: starting initial session as root in `/root`, `#` prompt for root and `>` for unprivileged users, automated respawn of `/bin/login` on session exit (`exit`).
 
-### Phase 11: Redox OS Driver Import & Adaptation
-- [ ] Adapter layer for Redox OS bus and device traits mapped to Wunix VFS and DeviceManager.
-- [ ] AHCI SATA storage controller driver (support for physical HDDs and SATA SSDs).
-- [ ] NVMe controller driver (fast PCIe M.2 SSDs, Submission/Completion ring queues).
-- [ ] Intel Gigabit Ethernet: `e1000` and `e1000e` NIC drivers.
-- [ ] Realtek Gigabit Ethernet: `rtl8168` and `rtl8111` onboard NIC drivers.
-- [ ] USB xHCI Host Controller (USB 3.0: support for flash drives, USB keyboards and mice).
+### Phase 11: Wunix Bootloader & TUI Installer (Bootloader, Live-ISO & Installer)
+- [ ] Wunix Bootloader architecture and multi-entry menu:
+  - [ ] Configuration module and boot menu supporting both BIOS and UEFI (Higher-Half x86_64).
+  - [ ] `Live-ISO` Mode ("Try Wunix without installing"): complete system bring-up in RamFS, running without touching local disks.
+  - [ ] `Normal Boot` Mode: standard boot sequence of an installed system from local block storage (`/dev/vda` / `/dev/sda` / NVMe).
+  - [ ] `Safe / Verbose Mode`: boot with forced VGA text mode and verbose dmesg kernel logging to COM1 and screen.
+  - [ ] `Installer` Mode: direct execution of the TUI system installer upon boot.
+- [ ] Terminal UI disk installer (`/sbin/winstall` or `/bin/installer`):
+  - [ ] TUI interface built on ANSI/VT100 escape sequences (dialog boxes, arrow-navigated menus, text input fields, progress indicators).
+  - [ ] Automatic detection of connected block storage devices via VFS (`/dev/vda`, `/dev/sda`, `/dev/nvme0n1`).
+  - [ ] Partitioning wizard: automatic layout (ESP/Boot and root `/` partitions) or manual partitioning via built-in `fdisk`.
+  - [ ] Target partition formatting (FAT32 / upcoming EXT4) and directory structure initialization.
+  - [ ] Target root partition mounting to `/mnt` and file-by-file deployment of Wunix Base (kernel, initramfs, `/bin`, `/sbin`, `/etc`, `/usr`).
+  - [ ] Boot sector / Stage 2 loader deployment to target disk for standalone booting without installation media.
+  - [ ] Initial system setup wizard: hostname configuration (`/etc/hostname`), root password configuration, and optional unprivileged user creation.
 
-### Phase 12: Hardware Inventory & Driver Deficit Coverage
+---
+
+### Phase 12: Virtualization Hypervisor Drivers (VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen)
+- [ ] VirtualBox (Oracle VM VirtualBox):
+  - [ ] VirtualBox Guest PCI Device driver (Vendor `0x80EE`, Device `0xCAFE`).
+  - [ ] VirtualBox Graphics Adapter driver (VBoxVGA / VBoxSVGA, Vendor `0x80EE`, Device `0xBEEF`).
+  - [ ] VirtualBox Mouse Integration (absolute pointer coordinates without cursor capture).
+  - [ ] Host shared folders client VirtualBox Shared Folders (VBoxSF) mounted into VFS.
+  - [ ] Host time and event guest synchronization service.
+- [ ] VMware (Workstation, Player, ESXi):
+  - [ ] VMware Backdoor I/O channel (ports `0x5658`/`0x5659`, signature `0x564D5868`) for hypervisor detection and telemetry.
+  - [ ] VMware SVGA II display controller (Vendor `0x15AD`, Device `0x0405`: accelerated 2D/3D operations, hardware cursor).
+  - [ ] VMware vmxnet3 virtual NIC (Vendor `0x15AD`, Device `0x07B0`: high-performance multiqueue paravirtual network adapter).
+  - [ ] VMware PVSCSI disk controller (Vendor `0x15AD`, Device `0x07C0`: paravirtual SCSI host adapter).
+  - [ ] VMware Absolute Mouse (VMMOUSE) integration.
+- [ ] Microsoft Hyper-V (Windows Server, Azure, Windows 10/11 Pro):
+  - [ ] Microsoft VMBus synthetic device architecture (message-passing channels, GPADL ring buffers).
+  - [ ] Hyper-V Synthetic Video adapter.
+  - [ ] NetVSC network adapter (Hyper-V Network Virtual Service Client).
+  - [ ] StorVSC disk controller (Hyper-V Storage Virtual Service Client).
+  - [ ] Core Hyper-V Integration Services: Heartbeat, Shutdown, and KVP (Key-Value Pair) exchange.
+- [ ] Proxmox VE, KVM / QEMU, and Xen:
+  - [ ] VirtIO extensions for Proxmox/KVM: VirtIO Balloon (dynamic memory management), VirtIO Console, VirtIO RNG, VirtIO SCSI.
+  - [ ] Xen Paravirtualization interface: Hypercalls, Grant Tables, and Xen PV block and network drivers.
+
+---
+
+### Phase 13: Full Redox OS Driver Import & Adaptation
+- [ ] Redox OS driver compatibility layer (Redox Driver Abstraction Layer):
+  - [ ] Redox bus and device traits (PCI, MMIO, DMA buffers) mapped to Wunix DeviceManager.
+- [ ] Storage controllers and block devices:
+  - [ ] AHCI SATA controller driver (Serial ATA AHCI 1.0..1.3.1, NCQ command queues, FIS structures, SSD and HDD support).
+  - [ ] NVMe controller driver (PCIe M.2 / U.2, NVM Express 1.x..2.x, Submission/Completion queue rings, 4K sector support).
+  - [ ] Legacy IDE / PATA controller driver (ATA/ATAPI, Primary/Secondary channels, PIO and DMA modes).
+- [ ] Ethernet Network Adapters (NICs):
+  - [ ] Intel Gigabit Ethernet: `e1000` (82540EP, 82545EM), `e1000e` (82573, 82574L, I217/I218/I219), and `igb` (82575, 82576, I350).
+  - [ ] Realtek Ethernet: `rtl8168` / `rtl8111` (PCIe Gigabit) and `rtl8139` (Fast Ethernet 10/100).
+- [ ] USB Host Controllers & USB Stack:
+  - [ ] xHCI controller driver (eXtensible Host Controller Interface, USB 3.0/3.1/3.2, TRB rings, device and slot contexts).
+  - [ ] EHCI controller driver (Enhanced Host Controller Interface, USB 2.0 High-Speed).
+  - [ ] UHCI / OHCI controller drivers (USB 1.1 Full/Low-Speed).
+  - [ ] USB device stack: USB Mass Storage (flash drives, card readers) and USB HID (keyboards, mice).
+- [ ] Audio drivers ported from Redox OS:
+  - [ ] Intel High Definition Audio driver (Intel HDA / Realtek ALC codecs).
+  - [ ] AC'97 Audio controller driver.
+  - [ ] Sound Blaster 16 driver (QEMU emulation and vintage hardware).
+
+---
+
+### Phase 14: Hardware Coverage Audit & Driver Gap Elimination
 - [ ] Comprehensive hardware coverage audit: supported controllers inventory and deficit gap mapping.
-- [ ] ACPI subsystem (RSDP, MADT, FADT, DSDT table parsing for power management and SMP cores).
-- [ ] APIC / IO-APIC interrupt controller (replacing legacy PIC 8259 for modern multicore CPUs).
-- [ ] Audio subsystem: Intel High Definition Audio (HDA / Realtek ALC) sound controller driver.
-- [ ] Wireless networking: basic Wi-Fi stack (Intel Wireless WiFi / Atheros).
-- [ ] Hardware diagnostic utilities for Wunix Shell: `lspci`, `lsusb`, `lshw`.
+- [ ] ACPI (Advanced Configuration and Power Interface) subsystem:
+  - [ ] RSDP, RSDT, and XSDT root table parsing.
+  - [ ] MADT/APIC table parsing for multicore interrupt routing.
+  - [ ] FADT and DSDT parsing: basic AML (ACPI Machine Language) bytecode interpreter for sleep, wake, and poweroff.
+- [ ] APIC / IO-APIC Interrupt Controllers & SMP (Symmetric Multiprocessing):
+  - [ ] Local APIC (per-CPU core) and motherboard IO-APIC initialization.
+  - [ ] MSI and MSI-X (Message Signaled Interrupts) queue support for PCIe devices.
+  - [ ] Inter-Processor Interrupts (IPI) and secondary CPU core initialization (SMP Bring-up, SIPI sequence).
+- [ ] Wireless networking (Wi-Fi stack):
+  - [ ] Core IEEE 802.11 wireless network stack architecture (frame scanning, Beacon, Probe, association).
+  - [ ] Drivers for common Wi-Fi chipsets (Intel Wireless-N / Wireless-AC, Atheros ath9k/ath10k).
+- [ ] Hardware diagnostic utilities for Wunix Shell: `lspci`, `lsusb`, `lshw`, `lsdev`.
+
+---
+
+### Phase 15: Advanced File Systems (EXT4, Btrfs)
+- [ ] EXT filesystem family (EXT2 / EXT3 / EXT4):
+  - [ ] EXT4 superblock and Block Group Descriptors parsing.
+  - [ ] EXT4 inode table (256-byte extended inodes, nanosecond timestamps).
+  - [ ] Extent Tree support (`ext4_extent_header`, `ext4_extent_idx`, `ext4_extent`) for efficient large file addressing (> 2 TiB).
+  - [ ] HTree directory indexing (Half-MD4 / TEA directory hash indexing).
+  - [ ] JBD2 journaling integration (reading, consistency checking, transaction replay after dirty unmounts).
+  - [ ] Userland utilities: `mkfs.ext4` formatting and `fsck.ext4` integrity verification.
+- [ ] Next-generation Btrfs filesystem (B-Tree Filesystem):
+  - [ ] Copy-on-Write (CoW) architecture and B-Trees (Root Tree, Chunk Tree, FS Tree).
+  - [ ] Subvolume and snapshot management.
+  - [ ] Data and metadata checksumming (CRC32c / xxHash / SHA-256) for silent data corruption (bit rot) detection.
+  - [ ] Transparent block-level compression (Zstandard / LZO).
+  - [ ] Userland utility `btrfs` (`btrfs subvolume create`, `btrfs subvolume list`, `btrfs subvolume snapshot`).
+- [ ] VFS and system utility integration:
+  - [ ] Support for mounting EXT4 and Btrfs partitions as root `/` or data directories (`/home`, `/var`).
+  - [ ] Extended attributes (xattr) and POSIX ACL permissions support.
