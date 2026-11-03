@@ -68,6 +68,7 @@ Wunix organizes man pages into standard UNIX sections:
 | [`rm(1)`](man1/rm.1) | Removes files from the filesystem. |
 | [`rmdir(1)`](man1/rmdir.1) | Deletes empty directories. |
 | [`su(1)`](man1/su.1) | Runs a shell with substitute user and group ID (default root). |
+| [`system(1)`](man1/system.1) | Manages and supervises system services and daemons. |
 | [`time(1)`](man1/time.1) | Measures execution duration of specified commands. |
 | [`timedatectl(1)`](man1/timedatectl.1) | Configures time zones and system clock parameters. |
 | [`top(1)`](man1/top.1) | Dynamic process and memory activity monitor. |

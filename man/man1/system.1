@@ -1,0 +1,59 @@
+.TH SYSTEM 1 "2026-11-03" "Wunix" "User Commands"
+.SH NAME
+system \- manage and supervise system services and daemons
+.SH SYNOPSIS
+\fBsystem\fR \fICOMMAND\fR [\fISERVICE\fR] [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBsystem\fR is the service supervisor and daemon manager for Wunix.
+It provides service lifecycle control (start, stop, restart), status inspection,
+autostart management, log viewing, and service definition editing.
+.SH COMMANDS
+.TP
+\fBstart\fR \fISERVICE\fR
+Start the specified service.
+.TP
+\fBstop\fR \fISERVICE\fR
+Stop the specified service.
+.TP
+\fBrestart\fR \fISERVICE\fR
+Restart the specified service.
+.TP
+\fBstatus\fR [\fISERVICE\fR]
+Display detailed status of a service (PID, uptime, logs) or list all services if omitted.
+.TP
+\fBlist\fR
+List all registered services and their current states.
+.TP
+\fBcreate\fR \fISERVICE\fR
+Generate a template configuration in /etc/services/ and open it in nano.
+.TP
+\fBedit\fR \fISERVICE\fR
+Open service configuration file in nano.
+.TP
+\fBenable\fR \fISERVICE\fR
+Enable autostart of the service at system boot.
+.TP
+\fBdisable\fR \fISERVICE\fR
+Disable autostart of the service.
+.TP
+\fBlogs\fR \fISERVICE\fR [\fB-n\fR \fILINES\fR] [\fB-f\fR]
+View stdout/stderr logs of the specified service.
+.SH FILES
+.I /etc/services/<service>.conf
+.RS
+Service configuration files.
+.RE
+.I /etc/services/enabled/
+.RS
+Symlinks for services enabled at boot.
+.RE
+.I /var/run/services/<service>.pid
+.RS
+Runtime PID files.
+.RE
+.I /var/log/services/<service>.log
+.RS
+Service log files.
+.RE
+.SH "SEE ALSO"
+\fBinit\fR(8), \fBtimedatectl\fR(1)
