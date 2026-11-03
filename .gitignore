@@ -1,0 +1,18 @@
+# IDE и текстовые редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Файлы Obsidian
+.obsidian/
+
+# Системные файлы операционных систем
+.DS_Store
+Thumbs.db
+
+# Логи и временные файлы сборки
+*.log
+_build/
+site/
