@@ -50,7 +50,7 @@ docs/
 │
 ├── dev/                    # [3. Руководство разработчика]
 │   ├── README.md           # Философия разработки, тулчейн и среда
-│   ├── building.md         # Сборка ядра, initramfs и ISO-образа (run.sh)
+│   ├── building.md         # Сборка ядра, initramfs и загрузочного ISO-образа
 │   ├── kernel-structure.md # Устройство исходного кода ядра (kernel/src/)
 │   ├── creating-programs.md# Написание новых утилит на Rust через libwunix
 │   └── coding-standards.md # Инженерные стандарты ub-mode, TDD, SRP, i18n

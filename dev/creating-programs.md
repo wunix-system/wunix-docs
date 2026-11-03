@@ -108,9 +108,12 @@ let sock = socket(AF_INET, SOCK_STREAM, 0);
 
 ---
 
-## 4. Включение утилиты в общую сборку ОС
+## 4. Сборка и установка утилиты
 
-Чтобы новая программа автоматически компилировалась и копировалась в системный каталог `/bin` образа `wunix.iso`:
-1. Добавьте путь к ней в корневой Cargo Workspace: `programs/Cargo.toml`.
-2. В скрипте [`wunix/tools/run.sh`](file:///home/valdis/my-os/wunix/tools/run.sh) в массиве `PROGRAMS` зарегистрируйте имя `myutil`.
-3. Создайте справочное руководство `docs/man/man1/myutil.1` для вызова `man myutil`.
+Чтобы скомпилировать и установить новую утилиту в системный образ Wunix:
+1. Выполните компиляцию бинарного файла для платформы ядра:
+   ```bash
+   cargo build --release --target x86_64-unknown-none
+   ```
+2. Разместите полученный ELF64-файл из `target/x86_64-unknown-none/release/myutil` в каталог `bin/` при формировании архива `initramfs.tar`.
+3. Создайте справочное руководство `man1/myutil.1` для вызова `man myutil`.
