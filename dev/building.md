@@ -37,7 +37,7 @@ rustup component add rust-src
 2. **Сборка пользовательских программ (`programs/`)**:
    Все утилиты (`cat`, `ls`, `wsh`, `login`, `fdisk` и др.) компилируются в Ring 3 с линковкой против `libwunix`.
 3. **Упаковка Initramfs**:
-   Скрипт формирует дерево каталогов (`bin/`, `etc/`, `dev/`, `win/`, `usr/share/man/`), упаковывает его в архив `initramfs.tar` и генерирует системные базы (`/etc/passwd`, `/etc/shadow`, реестр `system.reg`).
+   Скрипт формирует дерево каталогов (`bin/`, `etc/`, `dev/`, `tmp/`, `root/`, `home/`, `usr/share/man/`), упаковывает его в архив `initramfs.tar` и генерирует системные базы конфигураций (`/etc/passwd`, `/etc/shadow`, `/etc/group`, `/etc/sudoers`).
 4. **Создание загрузочного ISO-образа**:
    С помощью `xorriso` формируется гибридный ISO-образ `build/wunix.iso` с загрузчиком **Limine** (поддержка BIOS MBR и UEFI).
 5. **Запуск в эмуляторе QEMU**:

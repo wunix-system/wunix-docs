@@ -65,7 +65,6 @@ Wunix organizes man pages into standard UNIX sections:
 | [`passwd(1)`](man1/passwd.1) | Updates user authentication password in /etc/shadow. |
 | [`pwd(1)`](man1/pwd.1) | Prints canonical path of the current working directory. |
 | [`readlink(1)`](man1/readlink.1) | Resolves and prints symbolic link targets. |
-| [`reg(1)`](man1/reg.1) | Inspects and modifies the virtual Windows NT registry. |
 | [`rm(1)`](man1/rm.1) | Removes files from the filesystem. |
 | [`rmdir(1)`](man1/rmdir.1) | Deletes empty directories. |
 | [`su(1)`](man1/su.1) | Runs a shell with substitute user and group ID (default root). |
