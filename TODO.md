@@ -1,7 +1,7 @@
 # Дорожная карта и TODO разработки Wunix
 
 > **Дата запуска проекта:** 27.10.2026 — рождение идеи и старт разработки.  
-> **Текущий этап:** Этап 12 (Драйверы систем виртуализации: VirtualBox, VMware, Hyper-V, Proxmox/KVM, Xen).  
+> **Текущий этап:** Этап 13 (Импорт всех драйверов реального железа из Redox OS — на верификации).  
 > **Целевая архитектура ядра:** Гибридное модульное ядро на Rust (x86_64, протокол Limine).
 
 ---
@@ -22,7 +22,7 @@
 | **10** | **Пользователи и управление доступом**       | Модель UID/GID, `/etc/passwd`, `/etc/shadow`, POSIX права VFS (rwx, suid), `login`, `su`, `sudo`, `sudoadd`, `chmod`, `chown`                |   ✅ **Готово**    | Безопасная многопользовательская среда, аутентификация паролей, изоляция прав процессов и разграничение доступа к ФС.                                                      |
 | **11** | **Загрузчик WUNIX и TUI-установщик**         | Загрузочное меню (Live-ISO / Install), TUI-инсталлятор (`winstall`), разметка MBR/GPT, деплой на диск                                        |   ✅ **Готово**    | Автономная загрузка Wunix с диска и USB, выбор режимов Live-ISO / Install, установка на постоянный накопитель через псевдографику.                                         |
 | **12** | **Драйверы систем виртуализации**            | VirtualBox (VBoxGuest, VBoxSVGA), VMware (SVGA II, vmxnet3, PVSCSI), Hyper-V (VMBus, NetVSC, StorVSC), Proxmox/Xen                           |   ✅ **Готово**    | Безупречная работа Wunix на всех гипервизорах: VirtualBox, VMware Workstation/ESXi, Microsoft Hyper-V, Proxmox VE, KVM и Xen.                                              |
-| **13** | **Импорт всех драйверов из Redox OS**        | Полная адаптация драйверов Redox: AHCI SATA, NVMe, IDE, e1000/e1000e/igb, Realtek 8168/8139, xHCI/EHCI/UHCI USB, HDA/AC'97                   | ⏳ *Запланировано* | Полноценная поддержка контроллеров реального железа x86_64: диски SATA/NVMe, гигабитный Ethernet, стек USB 1.1–3.0 и звук.                                                 |
+| **13** | **Импорт всех драйверов из Redox OS**        | Полная адаптация драйверов Redox: AHCI SATA, NVMe, IDE, e1000/e1000e/igb, Realtek 8168/8139, xHCI/EHCI/UHCI USB, HDA/AC'97                   | ⏳ *На проверке*   | Полноценная поддержка контроллеров реального железа x86_64: диски SATA/NVMe, гигабитный Ethernet, стек USB 1.1–3.0 и звук.                                                 |
 | **14** | **Инвентаризация и аудит драйверов**         | Аудит аппаратного покрытия, ACPI (DSDT/MADT/AML), Local APIC / IO-APIC, SMP, Wi-Fi стек, Intel HDA                                           | ⏳ *Запланировано* | Полная инвентаризация оборудования, SMP-многоядерность, современный роутинг прерываний, управление питанием и Wi-Fi.                                                       |
 | **15** | **Расширение возможностей ФС (EXT4, Btrfs)** | Драйвер EXT2/EXT3/EXT4 (экстенты, иноды, JBD2), Btrfs (B-Tree, CoW, субтома, снапшоты, CRC32c), `mkfs`, `fsck`                               | ⏳ *Запланировано* | Полноценные промышленные журналируемые и CoW файловые системы: создание разделов EXT4 и Btrfs, моментальные снимки, целостность данных.                                    |
 
@@ -291,24 +291,24 @@
 ---
 
 ### Фаза 13: Импорт и адаптация всех драйверов из Redox OS
-- [ ] Адаптерный слой совместимости с Redox OS (Redox Driver Abstraction Layer):
-  - [ ] Трейты и абстракции шин Redox (PCI, MMIO, DMA буферы) поверх диспетчера DeviceManager ядра Wunix.
-- [ ] Дисковые контроллеры и блочные накопители:
-  - [ ] Драйвер контроллера AHCI SATA (Serial ATA AHCI 1.0..1.3.1, поддержка очередей команд NCQ, FIS-структуры, SSD и HDD).
-  - [ ] Драйвер контроллера NVMe (PCI Express M.2 / U.2, NVM Express 1.x..2.x, кольца очередей Submission/Completion, 4K секторы).
-  - [ ] Драйвер контроллеров IDE / PATA (Legacy ATA/ATAPI, Primary/Secondary контроллеры, PIO и DMA режимы).
-- [ ] Сетевые адаптеры (Ethernet NICs):
-  - [ ] Сетевые адаптеры Intel Gigabit: драйверы `e1000` (82540EP, 82545EM), `e1000e` (82573, 82574L, I217/I218/I219) и `igb` (82575, 82576, I350).
-  - [ ] Сетевые адаптеры Realtek: драйверы `rtl8168` / `rtl8111` (PCIe Gigabit) и `rtl8139` (Fast Ethernet 10/100).
-- [ ] Хост-контроллеры и стек шины USB:
-  - [ ] Драйвер xHCI (eXtensible Host Controller Interface, USB 3.0/3.1/3.2, передача команд TRB, контексты устройств и слотов).
-  - [ ] Драйвер EHCI (Enhanced Host Controller Interface, USB 2.0 High-Speed).
-  - [ ] Драйверы UHCI / OHCI (USB 1.1 Full-Speed / Low-Speed).
-  - [ ] Стек устройств USB: USB Mass Storage (флеш-накопители, кардридеры), USB HID (клавиатуры, мыши).
-- [ ] Аудио-драйверы из Redox OS:
-  - [ ] Драйвер звукового контроллера Intel High Definition Audio (Intel HDA / кодеки Realtek ALC).
-  - [ ] Драйвер контроллера AC'97 Audio.
-  - [ ] Драйвер Sound Blaster 16 (эмуляция QEMU и винтажное железо).
+- [x] Адаптерный слой совместимости с Redox OS (Redox Driver Abstraction Layer):
+  - [x] Трейты и абстракции шин Redox (PCI, MMIO, DMA буферы: `Io`, `Pio`, `Mmio`, `Dma`) поверх ядра Wunix.
+- [x] Дисковые контроллеры и блочные накопители:
+  - [x] Драйвер контроллера AHCI SATA (Serial ATA AHCI 1.0..1.3.1, модульная архитектура FIS/HBA/Port, LBA48, SSD и HDD).
+  - [x] Драйвер контроллера NVMe (PCI Express M.2 / U.2, NVM Express 1.x..2.x, кольца Admin/IO очередей Submission/Completion, 4K секторы).
+  - [x] Драйвер контроллеров IDE / PATA (Legacy ATA/ATAPI, Primary/Secondary контроллеры, PIO LBA28/LBA48).
+- [x] Сетевые адаптеры (Ethernet NICs):
+  - [x] Сетевые адаптеры Intel Gigabit: расширение драйверов `e1000` (82540EP, 82545EM), `e1000e` (82573, 82574L, I217/I218/I219) и `igb` (82575, 82576, I350, I210).
+  - [x] Сетевые адаптеры Realtek: драйверы `rtl8168` / `rtl8111` (PCIe Gigabit) и `rtl8139` (Fast Ethernet 10/100).
+- [x] Хост-контроллеры и стек шины USB:
+  - [x] Драйвер xHCI (eXtensible Host Controller Interface, USB 3.0/3.1/3.2, передача команд TRB, контексты устройств и слотов).
+  - [x] Драйвер EHCI (Enhanced Host Controller Interface, USB 2.0 High-Speed).
+  - [x] Драйверы UHCI / OHCI (USB 1.1 Full-Speed / Low-Speed).
+  - [x] Стек устройств USB: USB Mass Storage (флеш-накопители, кардридеры), USB HID (клавиатуры, мыши).
+- [x] Аудио-драйверы из Redox OS:
+  - [x] Драйвер звукового контроллера Intel High Definition Audio (Intel HDA, кодеки Realtek ALC, BDL списки).
+  - [x] Драйвер контроллера AC'97 Audio (микшер и Bus Master DMA).
+  - [x] Драйвер Sound Blaster 16 (эмуляция QEMU и винтажное железо).
 
 ---
 
