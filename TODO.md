@@ -278,7 +278,15 @@
   - [x] Базовые сервисы интеграции Hyper-V Integration Services: Heartbeat, Shutdown, KVP (Key-Value Pair).
 - [x] Proxmox VE, KVM / QEMU и Xen:
   - [x] Аудит и расширение VirtIO для Proxmox/KVM: VirtIO Balloon (динамическое управление памятью), VirtIO Console, VirtIO RNG (генератор случайных чисел), VirtIO SCSI.
-  - [x] Интерфейс гипервизора Xen (Xen Paravirtualization): гипервызовы (Hypercalls), страницы общего доступа (Grant Tables), блочные и сетевые PV-драйверы Xen.
+  - [x] Паравиртуальный интерфейс конфигурации QEMU fw_cfg (`0x510`/`0x511` I/O ports): чтение объема памяти хоста и vCPU.
+  - [x] Синхронизация времени хоста KVM pvclock (MSR `0x4B564D00`): точные наносекундные системные часы.
+  - [x] Видеоадаптер Bochs / QEMU Standard VGA (Vendor `0x1234`, Device `0x1111`) через VBE DISPI порты (`0x1CE`/`0x1CF`) с маппингом LFB.
+  - [x] Интерфейс гипервизора Xen (Xen Paravirtualization): гипервызовы (Hypercalls), страницы общего доступа (Grant Tables), блочные (xen-blkfront) и сетевые (xen-netfront) PV-драйверы.
+  - [x] Контроллер Xen Platform PCI Device (Vendor `0x5853`, Device `0x0001`): реализация протокола I/O unplug (`0x49D2`) для безопасного отключения эмулируемых IDE/NIC устройств.
+- [x] Универсальные драйверы оборудования виртуализации:
+  - [x] Сетевой контроллер Intel PRO/1000 Gigabit Ethernet (`e1000`: 82540EM, 82545EM, 82543GC, 82574L) для VirtualBox, VMware и QEMU.
+  - [x] Прямое монтирование общих папок VirtualBox Shared Folders через VFS (`mount -t vboxsf <share_name> <mount_point>`).
+  - [x] Виртуальные узлы `/proc/hypervisor` (статус, драйверы, возможности) и `/sys/hypervisor/type`.
 
 ---
 
