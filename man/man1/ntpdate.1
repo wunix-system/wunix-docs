@@ -1,0 +1,28 @@
+.TH NTPDATE 1 "2026-11-02" "Wunix" "User Commands"
+.SH NAME
+ntpdate \- set the date and time via NTP
+.SH SYNOPSIS
+\fBntpdate\fR [\fIOPTIONS\fR]... [\fISERVER\fR]...
+.SH DESCRIPTION
+\fBntpdate\fR sets the local date and time by polling Network Time Protocol (NTP) servers.
+.SH OPTIONS
+.TP
+\fB\-q\fR
+Query only \- do not set clock.
+.TP
+\fB\-b\fR
+Force stepping time.
+.TP
+\fB\-u\fR
+Use unprivileged port.
+.TP
+\fB\-s\fR
+Silent mode.
+.TP
+\fB\-v\fR
+Verbose output.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.SH "SEE ALSO"
+\fBtimedatectl\fR(1), \fBdate\fR(1), \fBtimesyncd\fR(8)

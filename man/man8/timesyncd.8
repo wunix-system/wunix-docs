@@ -1,0 +1,22 @@
+.TH TIMESYNCD 8 "2026-11-02" "Wunix" "System Administration"
+.SH NAME
+timesyncd \- network time synchronization daemon
+.SH SYNOPSIS
+\fBtimesyncd\fR [\fIOPTIONS\fR]...
+.SH DESCRIPTION
+\fBtimesyncd\fR periodically synchronizes the system clock with NTP servers.
+.SH OPTIONS
+.TP
+\fB\-1\fR, \fB\-\-once\fR
+Run synchronization once and exit.
+.TP
+\fB\-d\fR, \fB\-\-daemon\fR
+Run continuously in background daemon mode.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbose logging.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and exit.
+.SH "SEE ALSO"
+\fBtimedatectl\fR(1), \fBntpdate\fR(1), \fBhwclock\fR(1)
