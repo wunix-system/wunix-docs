@@ -1,0 +1,33 @@
+.TH MV 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+mv \- move (rename) files
+.SH SYNOPSIS
+\fBmv\fR [\fIOPTION\fR]... [\fB\-T\fR] \fISOURCE\fR \fIDEST\fR
+.br
+\fBmv\fR [\fIOPTION\fR]... \fISOURCE\fR... \fIDIRECTORY\fR
+.SH DESCRIPTION
+Rename \fISOURCE\fR to \fIDEST\fR, or move \fISOURCE\fR(s) to \fIDIRECTORY\fR.
+.SH OPTIONS
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+do not prompt before overwriting
+.TP
+\fB\-i\fR, \fB\-\-interactive\fR
+prompt before overwrite
+.TP
+\fB\-n\fR, \fB\-\-no\-clobber\fR
+do not overwrite an existing file
+.TP
+\fB\-T\fR, \fB\-\-no\-target\-directory\fR
+treat \fIDEST\fR as a normal file
+.TP
+\fB\-u\fR, \fB\-\-update\fR
+move only when the \fISOURCE\fR file is newer than the destination
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+explain what is being done
+.TP
+\fB\-\-help\fR
+display this help and exit
+.SH "SEE ALSO"
+\fBrm\fR(1), \fBln\fR(1), \fBls\fR(1)
