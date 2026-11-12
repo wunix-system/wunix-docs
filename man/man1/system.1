@@ -36,8 +36,15 @@ Enable autostart of the service at system boot.
 \fBdisable\fR \fISERVICE\fR
 Disable autostart of the service.
 .TP
-\fBlogs\fR \fISERVICE\fR [\fB-n\fR \fILINES\fR] [\fB-f\fR]
+\fBlogs\fR \fISERVICE\fR [\fB\-n\fR, \fB\-\-lines\fR \fILINES\fR] [\fB\-\-head\fR \fILINES\fR] [\fB\-f\fR, \fB\-\-follow\fR]
 View stdout/stderr logs of the specified service.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version information and exit.
 .SH FILES
 .I /etc/services/<service>.conf
 .RS

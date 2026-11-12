@@ -2,8 +2,24 @@
 .SH NAME
 mount \- mount a filesystem
 .SH SYNOPSIS
-\fBmount\fR [\fB\-t\fR \fIFSTYPE\fR] \fIDEVICE\fR \fIDIR\fR
+\fBmount\fR [\fIOPTION\fR]... \fIDEVICE\fR \fIDIR\fR
 .SH DESCRIPTION
 All files accessible in a Wunix system are arranged in one big tree, the file hierarchy, rooted at /. These files can be spread out over several devices. The \fBmount\fR command serves to attach the filesystem found on some device to the big file tree.
+.SH OPTIONS
+.TP
+\fB\-t\fR, \fB\-\-types\fR \fIFSTYPE\fR
+Specify the filesystem type (auto, ufs, ext4, fat32).
+.TP
+\fB\-o\fR, \fB\-\-options\fR \fIOPTS\fR
+Specify mount options (ro, rw).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbose mode.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display this help and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
 .SH "SEE ALSO"
 \fBumount\fR(8), \fBfdisk\fR(8)

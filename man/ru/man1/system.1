@@ -36,8 +36,15 @@ system \- управление и супервизия системных слу
 \fBdisable\fR \fIСЛУЖБА\fR
 Отключение автозапуска службы при загрузке.
 .TP
-\fBlogs\fR \fIСЛУЖБА\fR [\fB-n\fR \fIСТРОКИ\fR] [\fB-f\fR]
+\fBlogs\fR \fIСЛУЖБА\fR [\fB\-n\fR, \fB\-\-lines\fR \fIСТРОКИ\fR] [\fB\-\-head\fR \fIСТРОКИ\fR] [\fB\-f\fR, \fB\-\-follow\fR]
 Просмотр журнала вывода службы (stdout/stderr).
+.SH ОПЦИИ
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Показать эту справку и выйти.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Показать версию утилиты и выйти.
 .SH ФАЙЛЫ
 .I /etc/services/<служба>.conf
 .RS
