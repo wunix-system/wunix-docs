@@ -1,0 +1,18 @@
+.TH WINSTALL 8 "2026-11-12" "Wunix" "System Administration Commands"
+.SH NAME
+winstall \- interactive Wunix OS system installer
+.SH SYNOPSIS
+\fBwinstall\fR
+.SH DESCRIPTION
+\fBwinstall\fR is a text-mode (TUI) wizard for installing Wunix OS onto a local disk. It guides the user through disk selection, automatic or manual partitioning, filesystem formatting (ext4, fat32, ufs, swap), network adapter configuration, date and timezone setup, user and hostname creation, and deploying the kernel, bootloader, and base system files.
+.PP
+If \fB/proc/cmdline\fR contains \fBmode=install\fR, \fBwinstall\fR skips the Live/Install boot menu and starts the installation wizard directly.
+.SH FILES
+.TP
+\fI/proc/cmdline\fR
+Kernel command line checked for \fBmode=install\fR.
+.TP
+\fI/boot\fR
+Source directory for the kernel and Limine bootloader files.
+.SH "SEE ALSO"
+\fBfdisk\fR(8), \fBmount\fR(8), \fBinit\fR(8)
