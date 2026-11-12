@@ -1,0 +1,31 @@
+.TH GZIP 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+gzip \- compress or expand files
+.SH SYNOPSIS
+\fBgzip\fR [\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+\fBgzip\fR compresses or decompresses files in RFC 1952 GZIP format on Wunix OS.
+.SH OPTIONS
+.TP
+\fB\-c\fR, \fB\-\-stdout\fR
+Write output on standard output; keep original files unchanged.
+.TP
+\fB\-d\fR, \fB\-\-decompress\fR
+Decompress files.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Force overwrite of existing output files.
+.TP
+\fB\-k\fR, \fB\-\-keep\fR
+Keep (do not delete) input files.
+.TP
+\fB\-t\fR, \fB\-\-test\fR
+Test compressed file integrity.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbose mode (display compression ratio).
+.TP
+\fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBgunzip\fR(1), \fBtar\fR(1)

@@ -1,0 +1,32 @@
+.TH CPIO 1 "2026-11-12" "Wunix" "Команды пользователя"
+.SH ИМЯ
+cpio \- копирование файлов в архив и из архива
+.SH СИНТАКСИС
+\fBcpio\fR {\fB\-o\fR|\fB\-\-create\fR | \fB\-i\fR|\fB\-\-extract\fR | \fB\-t\fR|\fB\-\-list\fR} [\fIКЛЮЧИ\fR]...
+.SH ОПИСАНИЕ
+\fBcpio\fR — архиватор формата SVR4 portable cpio (\fBnewc\fR) для Wunix OS.
+.SH РЕЖИМЫ
+.TP
+\fB\-o\fR, \fB\-\-create\fR
+Создать архив (список файлов читается из STDIN, архив выводится в STDOUT).
+.TP
+\fB\-i\fR, \fB\-\-extract\fR
+Извлечь файлы из архива (чтение из STDIN).
+.TP
+\fB\-t\fR, \fB\-\-list\fR
+Показать список содержимого архива.
+.SH ОПЦИИ
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Подробный вывод.
+.TP
+\fB\-d\fR, \fB\-\-make\-directories\fR
+Создавать каталоги при распаковке.
+.TP
+\fB\-F\fR, \fB\-\-file\fR=\fIФАЙЛ\fR
+Использовать указанный файл вместо STDIN/STDOUT.
+.TP
+\fB\-\-help\fR
+Показать эту справку и выйти.
+.SH "СМ. ТАКЖЕ"
+\fBtar\fR(1), \fBar\fR(1)

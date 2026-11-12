@@ -1,0 +1,31 @@
+.TH UNZIP 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+unzip \- list, test and extract compressed files in a ZIP archive
+.SH SYNOPSIS
+\fBunzip\fR [\fB\-l\fR] [\fB\-v\fR] [\fB\-t\fR] [\fB\-d\fR \fIEXDIR\fR] [\fB\-o\fR] [\fB\-q\fR] \fIARCHIVE.zip\fR
+.SH DESCRIPTION
+\fBunzip\fR lists, tests, or extracts files from a ZIP archive on Wunix OS.
+.SH OPTIONS
+.TP
+\fB\-l\fR
+List archive files (short format).
+.TP
+\fB\-v\fR
+List archive files (verbose format with method, size, CRC32).
+.TP
+\fB\-t\fR
+Test archive file integrity (CRC32 check).
+.TP
+\fB\-d\fR \fIEXDIR\fR
+Extract files into directory \fIEXDIR\fR.
+.TP
+\fB\-o\fR
+Overwrite existing files without prompting.
+.TP
+\fB\-q\fR
+Quiet mode.
+.TP
+\fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBzip\fR(1), \fBtar\fR(1)

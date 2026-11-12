@@ -1,0 +1,35 @@
+.TH UNRAR 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+unrar \- extract files from RAR archives
+.SH SYNOPSIS
+\fBunrar\fR \fICOMMAND\fR [\fB\-\fR\fISWITCH\fR...] \fIARCHIVE\fR [\fIDEST_PATH/\fR]
+.SH DESCRIPTION
+\fBunrar\fR extracts and lists files in RAR archives on Wunix OS.
+.SH COMMANDS
+.TP
+\fBe\fR
+Extract files to the current directory without archived paths.
+.TP
+\fBl\fR
+List archive contents.
+.TP
+\fBt\fR
+Test archive file integrity.
+.TP
+\fBv\fR
+Verbosely list archive contents.
+.TP
+\fBx\fR
+Extract files with full paths.
+.SH OPTIONS
+.TP
+\fB\-o+\fR
+Overwrite existing files.
+.TP
+\fB\-y\fR
+Assume Yes on all queries.
+.TP
+\fB\-?\fR, \fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBunzip\fR(1), \fBtar\fR(1)

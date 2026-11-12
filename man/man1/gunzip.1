@@ -1,0 +1,28 @@
+.TH GUNZIP 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+gunzip \- decompress files in GZIP (.gz) format
+.SH SYNOPSIS
+\fBgunzip\fR [\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+\fBgunzip\fR decompresses files compressed in GZIP (\fB.gz\fR) format on Wunix OS.
+.SH OPTIONS
+.TP
+\fB\-c\fR, \fB\-\-stdout\fR
+Write output on standard output and keep original files unchanged.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Force overwrite of existing output files.
+.TP
+\fB\-k\fR, \fB\-\-keep\fR
+Keep (do not delete) input files during decompression.
+.TP
+\fB\-t\fR, \fB\-\-test\fR
+Test compressed file integrity.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbose mode.
+.TP
+\fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBgzip\fR(1), \fBtar\fR(1)

@@ -1,0 +1,35 @@
+.TH TAR 1 "2026-11-12" "Wunix" "User Commands"
+.SH NAME
+tar \- an archiving utility (POSIX ustar)
+.SH SYNOPSIS
+\fBtar\fR [\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+\fBtar\fR is a POSIX ustar archiving utility for creating, listing, and extracting tape archives.
+.SH MODES
+.TP
+\fB\-c\fR, \fB\-\-create\fR
+Create a new archive.
+.TP
+\fB\-x\fR, \fB\-\-extract\fR
+Extract files from an archive.
+.TP
+\fB\-t\fR, \fB\-\-list\fR
+List the contents of an archive.
+.SH OPTIONS
+.TP
+\fB\-f\fR, \fB\-\-file\fR=\fIARCHIVE\fR
+Use archive file \fIARCHIVE\fR (or \fB\-\fR for stdin/stdout).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Verbosely list files processed.
+.TP
+\fB\-z\fR, \fB\-\-gzip\fR
+Filter the archive through \fBgzip\fR(1).
+.TP
+\fB\-C\fR, \fB\-\-directory\fR=\fIDIR\fR
+Change to directory \fIDIR\fR before performing operations.
+.TP
+\fB\-\-help\fR
+Display this help and exit.
+.SH "SEE ALSO"
+\fBgzip\fR(1), \fBgunzip\fR(1), \fBcpio\fR(1)

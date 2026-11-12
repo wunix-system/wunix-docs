@@ -1,0 +1,25 @@
+.TH ZIP 1 "2026-11-12" "Wunix" "Команды пользователя"
+.SH ИМЯ
+zip \- упаковка и сжатие файлов в ZIP-архивы
+.SH СИНТАКСИС
+\fBzip\fR [\fB\-r\fR] [\fB\-0\fR] [\fB\-v\fR] [\fB\-q\fR] \fIАРХИВ.zip\fR \fIФАЙЛ1\fR [\fIФАЙЛ2\fR...]
+.SH ОПИСАНИЕ
+\fBzip\fR — архиватор формата ZIP (стандарт PKWARE) для Wunix OS.
+.SH ОПЦИИ
+.TP
+\fB\-r\fR, \fB\-\-recurse\-paths\fR
+Рекурсивно добавлять подкаталоги.
+.TP
+\fB\-0\fR, \fB\-\-store\fR
+Сохранять без сжатия (метод Store).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Подробный вывод.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Тихий режим (без вывода в stdout).
+.TP
+\fB\-\-help\fR
+Показать эту справку и выйти.
+.SH "СМ. ТАКЖЕ"
+\fBunzip\fR(1), \fBtar\fR(1)

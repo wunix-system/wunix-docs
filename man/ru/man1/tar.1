@@ -1,0 +1,35 @@
+.TH TAR 1 "2026-11-12" "Wunix" "Команды пользователя"
+.SH ИМЯ
+tar \- архиватор формата POSIX ustar
+.SH СИНТАКСИС
+\fBtar\fR [\fIКЛЮЧ\fR]... [\fIФАЙЛ\fR]...
+.SH ОПИСАНИЕ
+\fBtar\fR — утилита архивации POSIX ustar для создания, просмотра и распаковки архивов.
+.SH РЕЖИМЫ
+.TP
+\fB\-c\fR, \fB\-\-create\fR
+Создать новый архив.
+.TP
+\fB\-x\fR, \fB\-\-extract\fR
+Извлечь файлы из архива.
+.TP
+\fB\-t\fR, \fB\-\-list\fR
+Показать содержимое архива.
+.SH ОПЦИИ
+.TP
+\fB\-f\fR, \fB\-\-file\fR=\fIАРХИВ\fR
+Имя файла архива (или \fB\-\fR для stdin/stdout).
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Подробный вывод обрабатываемых файлов.
+.TP
+\fB\-z\fR, \fB\-\-gzip\fR
+Сжатие или распаковка через \fBgzip\fR(1).
+.TP
+\fB\-C\fR, \fB\-\-directory\fR=\fIКАТАЛОГ\fR
+Перейти в указанный каталог перед началом работы.
+.TP
+\fB\-\-help\fR
+Показать эту справку и выйти.
+.SH "СМ. ТАКЖЕ"
+\fBgzip\fR(1), \fBgunzip\fR(1), \fBcpio\fR(1)
