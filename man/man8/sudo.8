@@ -1,14 +1,20 @@
-.TH SUDO 8 "2026-10-30" "Wunix" "System Administration Commands"
+.TH SUDO 8 "2026-11-18" "Wunix" "System Administration Commands"
 .SH NAME
 sudo \- execute a command as superuser root
 .SH SYNOPSIS
 \fBsudo\fR [\fIOPTION\fR] \fICOMMAND\fR [\fIARGUMENTS\fR...]
 .SH DESCRIPTION
-\fBsudo\fR allows a permitted user to execute a command with superuser privileges (as user root). If invoked by an unprivileged user, \fBsudo\fR checks membership in the administrative group (e.g. \fBwheel\fR) and prompts for the user's password before executing the target binary.
+\fBsudo\fR allows a permitted user to execute a command with superuser privileges (as user root). If invoked by an unprivileged user, \fBsudo\fR checks membership in the administrative group (\fBwheel\fR) and prompts for the user's password before executing the target binary. Upon successful authentication, a timestamp ticket is created in \fB/var/run/sudo/ts\fR, caching credentials for 15 minutes.
 .SH OPTIONS
 .TP
 \fB\-h\fR, \fB\-\-help\fR
 Display this help and exit.
+.TP
+\fB\-k\fR, \fB\-\-reset\-timestamp\fR
+Invalidate timestamp ticket, causing the next sudo command to prompt for password.
+.TP
+\fB\-v\fR, \fB\-\-validate\fR
+Update timestamp ticket without running a command, prompting for password if necessary.
 .SH EXAMPLES
 .TP
 sudo fdisk /dev/vda
