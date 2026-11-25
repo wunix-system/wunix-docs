@@ -1,29 +1,11 @@
-.TH WSPD 8 "2026-11-12" "Wunix" "System Administration Commands"
+.TH WSPD 8 "2026-11-25" "Wunix" "System Manager's Manual"
 .SH NAME
-wspd \- Wunix System Package background update check daemon
+wspd \- Wunix background system update check daemon
 .SH SYNOPSIS
 \fBwspd\fR [\fIOPTIONS\fR]...
 .SH DESCRIPTION
-\fBwspd\fR is the background daemon that periodically checks for Wunix System Package (WSP) updates.
-.SH OPTIONS
-.TP
-\fB\-1\fR, \fB\-\-once\fR
-Run a single update check and exit.
-.TP
-\fB\-d\fR, \fB\-\-daemon\fR
-Run continuously in daemon mode (default).
-.TP
-\fB\-v\fR, \fB\-\-verbose\fR
-Verbose log output.
-.TP
-\fB\-h\fR, \fB\-\-help\fR
-Show this help message and exit.
-.TP
-\fB\-V\fR, \fB\-\-version\fR
-Show version information and exit.
+\fBwspd\fR is the background daemon that periodically checks for critical system and kernel updates in Wunix OS and writes status alerts for \fBwpm\fR.
 .SH FILES
-.TP
-\fI/etc/wsp/daemon.conf\fR
-Daemon configuration file.
+\fI/etc/wpm/daemon.conf\fR, \fI/run/wpm/critical_alert.json\fR
 .SH "SEE ALSO"
-\fBwsp\fR(8), \fBwpm\fR(8), \fBsystem\fR(1)
+\fBwpm\fR(8), \fBsystem\fR(1)

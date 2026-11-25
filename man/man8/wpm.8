@@ -1,53 +1,73 @@
-.TH WPM 8 "2026-11-12" "Wunix" "System Administration Commands"
+.TH WPM 8 "2026-11-25" "Wunix" "System Manager's Manual"
 .SH NAME
-wpm \- user package manager for Wunix OS (.wp)
+wpm \- unified package manager for Wunix OS (.wp)
 .SH SYNOPSIS
 \fBwpm\fR [\fIOPTIONS\fR]... [\fICOMMAND\fR] [\fIARGS\fR]...
 .SH DESCRIPTION
-\fBwpm\fR manages user-space applications packaged in \fB.wp\fR format on Wunix OS. Modifying packages requires root privileges.
+\fBwpm\fR is the unified package manager for Wunix OS. It manages base system components, the kernel, metapackages (\fBbase\fR, \fBbase-apps\fR, \fBminimal-live\fR), and user applications in \fB.wp\fR format.
+.PP
+The \fB[system]\fR repository source is built into \fBwpm\fR and cannot be modified by users. User application sources are configured in \fI/etc/wpm/sources.conf\fR.
 .SH COMMANDS
 .TP
-\fBsearch\fR \fIQUERY\fR
-Search available applications in repository catalogs.
-.TP
 \fBinstall\fR \fIPKG\fR...
-Install software from local cache or a \fB.wp\fR file.
+Install one or more packages or metapackages (supports dependencies).
+.TP
+\fBreinstall\fR \fIPKG\fR...
+Force reinstall one or more already installed packages.
 .TP
 \fBremove\fR \fIPKG\fR...
-Remove installed software.
-.TP
-\fBupgrade\fR
-Upgrade installed software.
-.TP
-\fBlist\fR
-List installed software.
-.TP
-\fBinfo\fR \fIPKG\fR
-Show details for a package.
-.TP
-\fBrepo\fR [\fBlist\fR|\fBadd\fR|\fBrm\fR]
-Manage repository sources.
+Remove installed user packages (system/critical packages are protected).
 .TP
 \fBupdate\fR
-Synchronize repository indexes.
+Synchronize system and user repository indexes.
+.TP
+\fBupgrade\fR
+Upgrade installed packages (including kernel A/B rotation).
+.TP
+\fBcheck\fR
+Check for available updates.
+.TP
+\fBsearch\fR \fIQUERY\fR
+Search packages across all repositories.
+.TP
+\fBlist\fR
+List installed packages.
+.TP
+\fBinfo\fR \fIPKG\fR
+Show package details.
+.TP
+\fBrepo\fR [\fBlist\fR|\fBadd\fR|\fBrm\fR|\fBping\fR]
+Manage user repository sources (\fI/etc/wpm/sources.conf\fR).
+.TP
+\fBaudit\fR [\fB\-v\fR]
+Audit kernel and system file integrity.
+.TP
+\fBkernel\fR [\fBlist\fR|\fBrollback\fR|\fBclean\fR]
+Manage kernel binaries in \fI/boot\fR.
 .TP
 \fBclean\fR
-Clean package cache in \fI/var/cache/wpm\fR.
+Clean local cache \fI/var/cache/wpm\fR.
 .SH OPTIONS
 .TP
 \fB\-v\fR, \fB\-V\fR, \fB\-\-version\fR
 Show version information.
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Show this help message.
+Show help message.
 .TP
 \fB\-y\fR, \fB\-\-yes\fR
-Do not prompt for confirmation.
+Confirm operations without prompting.
+.TP
+\fB\-c\fR, \fB\-\-critical\fR
+Target critical system packages only.
 .TP
 \fB\-d\fR, \fB\-\-verbose\fR
-Verbose extraction logs.
+Verbose output.
+.TP
+\fB\-\-reinstall\fR
+Reinstall already installed packages.
 .TP
 \fB\-\-ignore\-critical\-unsafe\fR
-Override WSP base security check.
+Bypass critical system update guard for user packages.
 .SH "SEE ALSO"
-\fBwsp\fR(8), \fBwspd\fR(8)
+\fBwspd\fR(8), \fBwinstall\fR(8)
